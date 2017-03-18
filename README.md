@@ -1,3 +1,3 @@
 Django-api
 
-Library for creating easy django api
+Library for creating simple django api

@@ -1,18 +1,21 @@
 import re
+from os import path
 from setuptools import setup, find_packages
+
+BASE_DIR = path.abspath(path.dirname(__file__))
 
 
 def find_version():
-    for line in open("django-api/__init__.py"):
-        if line.startswith("__version__"):
+    for line in open(path.join(BASE_DIR, 'django_api/__init__.py')):
+        if line.startswith('__version__'):
             return re.match(r"""__version__\s*=\s*(['"])([^'"]+)\1""", line).group(2)
 
-modules = ['tornado', 'torndsession', 'passlib', 'ujson', 'six']
+
 setup(
-    name='tornkts',
+    name='django-api',
     version=find_version(),
-    description='Library for creating easy django api',
-    long_description='Library for creating easy django api',
+    description='Library for creating simple django api',
+    long_description='Library for creating simple django api',
 
     author='Alexander Opryshko',
     author_email='alexopryshko@yandex.ru',
