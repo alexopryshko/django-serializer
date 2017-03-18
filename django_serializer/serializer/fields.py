@@ -1,4 +1,4 @@
-from django_api.exceptions import SerializerFieldException
+from django_serializer.exceptions import SerializerFieldException
 
 
 class Field:

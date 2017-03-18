@@ -1,4 +1,4 @@
-from django_api.exceptions import ServerError
+from django_serializer.exceptions import ServerError
 
 
 class PermissionsModelMixin:

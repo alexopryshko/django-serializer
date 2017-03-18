@@ -2,7 +2,7 @@ from django import forms
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
 
-from django_api.exceptions import ServerError
+from django_serializer.exceptions import ServerError
 
 
 class CsrfExemptMixin:

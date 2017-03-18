@@ -3,11 +3,11 @@ import json
 from django.http import HttpResponse
 from django.views.generic import View
 
-from django_api.permissions import PermissionsMixin
-from django_api.exceptions import (FormException, ServerError, )
-from django_api.exceptions import BaseViewException as BVE_1
-from django_api.exceptions import BaseViewException as BVE_2
-from django_api.mixins import (
+from django_serializer.permissions import PermissionsMixin
+from django_serializer.exceptions import (FormException, ServerError, )
+from django_serializer.exceptions import BaseViewException as BVE_1
+from django_serializer.exceptions import BaseViewException as BVE_2
+from django_serializer.mixins import (
     CsrfExemptMixin,
     SerializerMixin,
     ObjectMixin,

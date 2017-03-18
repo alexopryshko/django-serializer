@@ -2,7 +2,7 @@ from django.contrib.gis.db import models
 from django.core.exceptions import ValidationError
 from django.db.models.base import ModelBase
 
-from django_api.exceptions import MissEntityTypeException, DuplicateEntityTypeException
+from django_serializer.exceptions import MissEntityTypeException, DuplicateEntityTypeException
 
 
 ENTITY_TYPE_LENGTH = 16

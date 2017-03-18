@@ -6,20 +6,20 @@ BASE_DIR = path.abspath(path.dirname(__file__))
 
 
 def find_version():
-    for line in open(path.join(BASE_DIR, 'django_api/__init__.py')):
+    for line in open(path.join(BASE_DIR, 'django_serializer/__init__.py')):
         if line.startswith('__version__'):
             return re.match(r"""__version__\s*=\s*(['"])([^'"]+)\1""", line).group(2)
 
 
 setup(
-    name='django-api',
+    name='django-serializer',
     version=find_version(),
     description='Library for creating simple django api',
     long_description='Library for creating simple django api',
 
     author='Alexander Opryshko',
     author_email='alexopryshko@yandex.ru',
-    url='https://github.com/alexopryshko/django-api',
+    url='https://github.com/alexopryshko/django-serializer',
 
     license='MIT',
 
@@ -35,7 +35,7 @@ setup(
         'Programming Language :: Python :: 3.4',
         'Programming Language :: Python :: 3.5',
     ],
-    keywords='django-api setuptools development',
+    keywords='django-serializer setuptools development',
     packages=find_packages(exclude=['contrib', 'docs', 'tests*']),
     install_requires=[
         'Django>=1.10',

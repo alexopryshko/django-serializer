@@ -1,6 +1,6 @@
 from django import forms
 
-from django_api.exceptions import FormException
+from django_serializer.exceptions import FormException
 
 
 class Paginator(object):

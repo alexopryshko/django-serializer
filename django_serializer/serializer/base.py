@@ -3,9 +3,9 @@ from django.contrib.gis.db import models as gis_models
 from django.contrib.postgres.fields import ArrayField as PostgresArrayField
 from django.contrib.postgres.fields import JSONField as PostgresJSONField
 
-from django_api.model.base import EntityField
-from django_api.exceptions import MetaSerializerException, MappingSerializerException
-from django_api.serializer.fields import (
+from django_serializer.model.base import EntityField
+from django_serializer.exceptions import MetaSerializerException, MappingSerializerException
+from django_serializer.serializer.fields import (
     Field,
     IntegerField,
     BooleanField,
