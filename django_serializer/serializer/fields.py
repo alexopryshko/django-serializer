@@ -88,7 +88,7 @@ class ArrayField(Field):
 
 class ImageField(Field):
     def serialization_handler(self, value):
-        if value is not None:
+        if value:
             return value.url
 
 
