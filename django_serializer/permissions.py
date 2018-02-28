@@ -55,7 +55,7 @@ class PermissionsMixin(PermissionsModelMixin):
             permissions = obj.owner_permission
         elif obj.in_group(user):
             permissions = obj.group_permission
-        elif user.is_authenticated():
+        elif user.is_authenticated:
             permissions = obj.authorized_permission
         else:
             permissions = obj.unauthorized_permission
