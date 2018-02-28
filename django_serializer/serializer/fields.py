@@ -89,7 +89,10 @@ class ArrayField(Field):
 class ImageField(Field):
     def serialization_handler(self, value):
         if value:
-            return value.url
+            try:
+                return value.url
+            except ValueError:
+                return None
 
 
 class SerializerField(Field):
