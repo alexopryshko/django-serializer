@@ -1,7 +1,4 @@
 from django.db import models
-from django.contrib.gis.db import models as gis_models
-from django.contrib.postgres.fields import ArrayField as PostgresArrayField
-from django.contrib.postgres.fields import JSONField as PostgresJSONField
 
 from django_serializer.model.base import EntityField
 from django_serializer.exceptions import MetaSerializerException, MappingSerializerException
@@ -132,9 +129,6 @@ class ModelSerializerMeta(SerializerMeta):
         models.PositiveSmallIntegerField: IntegerField,
         models.SmallIntegerField: IntegerField,
         models.TextField: CharField,
-        gis_models.PointField: PointField,
-        PostgresJSONField: JSONField,
-        PostgresArrayField: ArrayField,
         EntityField: IntegerField,
         models.ImageField: ImageField,
         models.URLField: CharField
