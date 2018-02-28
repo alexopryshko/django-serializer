@@ -34,6 +34,7 @@ setup(
 
         'Programming Language :: Python :: 3.4',
         'Programming Language :: Python :: 3.5',
+        'Programming Language :: Python :: 3.6',
     ],
     keywords='django-serializer setuptools development',
     packages=find_packages(exclude=['contrib', 'docs', 'tests*']),
