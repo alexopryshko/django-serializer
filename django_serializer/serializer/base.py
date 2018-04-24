@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.db import models
 
 from django_serializer.model.base import EntityField
@@ -11,13 +12,41 @@ from django_serializer.serializer.fields import (
     DateTimeField,
     FloatField,
     ModelField,
-    PointField,
     SerializerField,
     TimeField,
-    JSONField,
-    ArrayField,
     ImageField,
 )
+
+SERIALIZER_FIELD_MAPPING = {
+    models.AutoField: IntegerField,
+    models.BigIntegerField: IntegerField,
+    models.BooleanField: BooleanField,
+    models.CharField: CharField,
+    models.CommaSeparatedIntegerField: CharField,
+    models.DateField: DateField,
+    models.DateTimeField: DateTimeField,
+    models.TimeField: TimeField,
+    models.DecimalField: IntegerField,
+    models.EmailField: CharField,
+    models.ForeignKey: ModelField,
+    models.OneToOneField: ModelField,
+    models.FloatField: FloatField,
+    models.IntegerField: IntegerField,
+    models.PositiveIntegerField: IntegerField,
+    models.PositiveSmallIntegerField: IntegerField,
+    models.SmallIntegerField: IntegerField,
+    models.TextField: CharField,
+    EntityField: IntegerField,
+    models.ImageField: ImageField,
+    models.URLField: CharField
+}
+EXTRA_SERIALIZER_FIELD_MAPPING = getattr(
+    settings, 'SERIALIZER_FIELD_MAPPING', None
+)
+if EXTRA_SERIALIZER_FIELD_MAPPING:
+    assert isinstance(EXTRA_SERIALIZER_FIELD_MAPPING, dict), \
+        'SERIALIZER_FIELD_MAPPING should be dict'
+    SERIALIZER_FIELD_MAPPING.update(EXTRA_SERIALIZER_FIELD_MAPPING)
 
 
 class SerializerMeta(type):
@@ -110,30 +139,6 @@ class Serializer(metaclass=SerializerMeta):
 
 
 class ModelSerializerMeta(SerializerMeta):
-    serializer_field_mapping = {
-        models.AutoField: IntegerField,
-        models.BigIntegerField: IntegerField,
-        models.BooleanField: BooleanField,
-        models.CharField: CharField,
-        models.CommaSeparatedIntegerField: CharField,
-        models.DateField: DateField,
-        models.DateTimeField: DateTimeField,
-        models.TimeField: TimeField,
-        models.DecimalField: IntegerField,
-        models.EmailField: CharField,
-        models.ForeignKey: ModelField,
-        models.OneToOneField: ModelField,
-        models.FloatField: FloatField,
-        models.IntegerField: IntegerField,
-        models.PositiveIntegerField: IntegerField,
-        models.PositiveSmallIntegerField: IntegerField,
-        models.SmallIntegerField: IntegerField,
-        models.TextField: CharField,
-        EntityField: IntegerField,
-        models.ImageField: ImageField,
-        models.URLField: CharField
-    }
-
     def __new__(mcs, name, bases, attrs):
         if name == 'ModelSerializer':
             new = super(ModelSerializerMeta, mcs).__new__(mcs, name, bases, attrs)
@@ -185,7 +190,7 @@ class ModelSerializerMeta(SerializerMeta):
                 serializer_field_class = model_field_class.serializer
             else:
                 try:
-                    serializer_field_class = mcs.serializer_field_mapping[model_field_class]
+                    serializer_field_class = SERIALIZER_FIELD_MAPPING[model_field_class]
                 except KeyError:
                     raise MappingSerializerException('{} is not supported'.format(model_field_class))
 

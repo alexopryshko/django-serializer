@@ -65,25 +65,25 @@ class ModelField(Field):
         return value if value is not None else None
 
 
-class PointField(Field):
-    def serialization_handler(self, value):
-        if value is not None:
-            return {
-                'lng': value.x,
-                'lat': value.y
-            }
+# class PointField(Field):
+#     def serialization_handler(self, value):
+#         if value is not None:
+#             return {
+#                 'lng': value.x,
+#                 'lat': value.y
+#             }
 
 
-class JSONField(Field):
-    def serialization_handler(self, value):
-        if value is not None:
-            return dict(value)
+# class JSONField(Field):
+#     def serialization_handler(self, value):
+#         if value is not None:
+#             return dict(value)
 
 
-class ArrayField(Field):
-    def serialization_handler(self, value):
-        if value is not None:
-            return list(value)
+# class ArrayField(Field):
+#     def serialization_handler(self, value):
+#         if value is not None:
+#             return list(value)
 
 
 class ImageField(Field):
