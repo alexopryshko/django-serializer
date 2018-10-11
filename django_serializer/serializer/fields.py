@@ -103,4 +103,6 @@ class SerializerField(Field):
         super().__init__(**kwargs)
 
     def serialization_handler(self, obj):
+        if callable(self.source):
+            return self.source(obj)
         return getattr(self.serializer, self.source)(obj)
