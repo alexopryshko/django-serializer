@@ -1,6 +1,7 @@
 Django>=1.10
 pep8==1.7.0
 flake8==3.2.1
-twine
+twine==1.12.1
 pytest==3.4.1
 pytest-django==3.1.2
+
