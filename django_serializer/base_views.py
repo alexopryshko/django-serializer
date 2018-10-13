@@ -68,7 +68,8 @@ class BaseView(View):
     def response_wrapper(self, response):
         return HttpResponse(json.dumps({'status': 'ok', 'data': response}), content_type="application/json")
 
-    def exception_wrapper(self, exception):
+    @staticmethod
+    def exception_wrapper(exception):
         response = {
             'status': exception.get_alias(),
             'message': exception.get_description(),
