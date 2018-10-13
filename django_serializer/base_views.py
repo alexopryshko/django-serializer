@@ -65,7 +65,8 @@ class BaseView(View):
     def response_middleware(self, response):
         return response
 
-    def response_wrapper(self, response):
+    @staticmethod
+    def response_wrapper(response):
         return HttpResponse(json.dumps({'status': 'ok', 'data': response}), content_type="application/json")
 
     @staticmethod
