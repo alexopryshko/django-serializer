@@ -30,7 +30,7 @@ class IntegerField(Field):
 
 class BooleanField(Field):
     def serialization_handler(self, value):
-        return int(value) if value is not None else None
+        return bool(value) if value is not None else None
 
 
 class CharField(Field):
