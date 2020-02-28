@@ -41,3 +41,4 @@ DEBIAN
 dump.rdb
 uploads
 profile-report.txt
+tests/tproj/db.sqlite3
