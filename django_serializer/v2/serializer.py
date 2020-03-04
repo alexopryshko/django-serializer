@@ -1,4 +1,4 @@
-from typing import Sequence, Type, Callable, Set
+from typing import Type, Set
 
 from django.conf import settings
 from django.db import models
@@ -21,8 +21,8 @@ SERIALIZER_FIELD_MAPPING = {
     models.TimeField: fields.Time,
     models.DecimalField: fields.Decimal,
     models.EmailField: fields.Str,
-    # models.ForeignKey: ModelField,
-    # models.OneToOneField: ModelField,
+    models.ForeignKey: fields.Int,
+    models.OneToOneField: fields.Int,
     models.FloatField: fields.Float,
     models.IntegerField: fields.Int,
     models.PositiveIntegerField: fields.Int,
@@ -75,15 +75,15 @@ class ModelSerializerMeta(SchemaMeta):
 
         meta = None
         try:
-            meta = attrs['MMeta']
+            meta = attrs['SMeta']
         except KeyError:
             for base in bases:
-                meta = getattr(base, 'MMeta', None)
+                meta = getattr(base, 'SMeta', None)
                 if meta:
                     break
         if not meta:
             raise IncorrectMetaException(
-                name, ['serializer have not `MMeta` class']
+                name, ['serializer have not `SMeta` class']
             )
 
         model: Type[models.Model] = getattr(meta, 'model', None)

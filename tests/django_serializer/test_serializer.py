@@ -22,7 +22,7 @@ class TestModelSerializerMeta:
     def _create_meta(self, fields: dict):
         try:
             class T(ModelSerializer):
-                class MMeta:
+                class SMeta:
                     for k, v in fields.items():
                         locals()[k] = v
         except IncorrectMetaException as e:
@@ -58,7 +58,7 @@ class TestModelSerializer:
 
     def test_success(self, model):
         class T(ModelSerializer):
-            class MMeta:
+            class SMeta:
                 model = SomeModel
 
         res = T().dump(model)
@@ -72,7 +72,7 @@ class TestModelSerializer:
 
     def test_fields(self, model):
         class T(ModelSerializer):
-            class MMeta:
+            class SMeta:
                 model = SomeModel
                 fields = {'created'}
 
@@ -81,7 +81,7 @@ class TestModelSerializer:
 
     def test_exclude(self, model):
         class T(ModelSerializer):
-            class MMeta:
+            class SMeta:
                 model = SomeModel
                 exclude = {'created'}
 

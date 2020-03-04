@@ -23,7 +23,7 @@ class HttpMethod(enum.Enum):
 class ApiViewMeta(type):
     class Meta:
         method: HttpMethod = None
-        tags: List[str] = ()
+        tags: List[str] = []
         summary: Optional[str] = None
         description: Optional[str] = None
         query_form: Optional[Type[Form]] = None
@@ -32,20 +32,24 @@ class ApiViewMeta(type):
         serializer_many: bool = False
         errors: List[Type[HttpError]] = []
 
+        __manual_validation__: List[str] = ['tags', 'errors']
+
     def __new__(mcs, name, bases, attrs, *args, **kwargs):
         checkmeta = kwargs.pop('checkmeta', True)
         # noinspection PyArgumentList
         cls = super().__new__(mcs, name, bases, attrs, *args, **kwargs)
 
-        options = attrs.get('Meta')
-        base_options = mcs.find_base_options(bases)
-        meta = mcs.merge_options(options, base_options)
         if checkmeta:
-            errors = mcs.check_meta(meta)
+            options = attrs.get('Meta')
+            base_options = mcs.find_base_options(bases)
+            meta = mcs.merge_options(options, base_options)
+            errors = []
+            mcs.check_meta_extra(meta, errors)
+            mcs.check_meta(meta, errors)
             if errors:
                 raise IncorrectMetaException(name, errors)
+            attrs['Meta'] = meta
 
-        attrs['Meta'] = meta
         return cls
 
     @staticmethod
@@ -79,9 +83,7 @@ class ApiViewMeta(type):
                     return annt
 
     @classmethod
-    def check_meta(mcs, meta):
-        errors = []
-
+    def check_meta_extra(mcs, meta: Type, errors: List):
         tags = getattr(meta, 'tags', None)
         if not tags:
             errors.append('`tags` is required')
@@ -108,9 +110,15 @@ class ApiViewMeta(type):
                     errors.append('`errors` item has incorrect type, '
                                   'should be subtype of HttpError')
 
-        for field_name in ['method', 'serializer_many',
-                           'summary', 'description', 'query_form', 'body_form',
-                           'serializer']:
+        return errors
+
+    @classmethod
+    def check_meta(mcs, meta: Type, errors: List):
+        manual_validation = mcs.Meta.__manual_validation__
+        for field_name in dir(mcs.Meta):
+            if field_name.startswith('_') or field_name in manual_validation:
+                continue
+
             field = getattr(meta, field_name, None)
             annt = mcs.get_annotation(mcs.Meta, field_name)
 

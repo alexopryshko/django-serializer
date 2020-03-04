@@ -2,7 +2,8 @@ from .base import ApiViewException
 
 __all__ = (
     'HttpError', 'HttpNotImplementedError', 'BadRequestError',
-    'InternalServerError', 'HttpFormError'
+    'InternalServerError', 'HttpFormError', 'NotFoundError',
+    'AuthRequiredError', 'ForbiddenError'
 )
 
 
@@ -35,6 +36,33 @@ class BadRequestError(HttpError):
             http_code=400,
             alias='bad_request',
             description=description
+        )
+
+
+class AuthRequiredError(HttpError):
+    def __init__(self):
+        super().__init__(
+            http_code=401,
+            alias='auth_required',
+            description='Authentication required'
+        )
+
+
+class ForbiddenError(HttpError):
+    def __init__(self):
+        super().__init__(
+            http_code=403,
+            alias='forbidden',
+            description='Forbidden'
+        )
+
+
+class NotFoundError(HttpError):
+    def __init__(self):
+        super().__init__(
+            http_code=404,
+            alias='not_found',
+            description='Not Found'
         )
 
 

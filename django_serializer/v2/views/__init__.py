@@ -1,3 +1,3 @@
 from .base import ApiView
-from .generics import CreateApiView
+from .generics import *
 from .meta import HttpMethod

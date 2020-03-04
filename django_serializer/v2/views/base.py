@@ -28,6 +28,17 @@ class ApiView(View, metaclass=ApiViewMeta, checkmeta=False):
     def request_body(self) -> Mapping:
         return getattr(self, '_request_body', None)
 
+    def get_request_json(self):
+        if hasattr(self, '_request_json'):
+            return getattr(self, '_request_json')
+        if 'application/json' in self.request.content_type:
+            try:
+                payload = json.loads(self.request.body)
+                setattr(self, '_request_json', payload)
+                return payload
+            except JSONDecodeError:
+                raise BadRequestError('body json is invalid')
+
     @staticmethod
     def _form_pipeline(form_class: Type[Form], data: Mapping):
         if form_class:
@@ -43,12 +54,9 @@ class ApiView(View, metaclass=ApiViewMeta, checkmeta=False):
 
     def _body_form(self):
         body_form = self.Meta.body_form
-        if body_form and 'application/json' in self.request.content_type:
-            try:
-                json_body = json.loads(self.request.body)
-            except JSONDecodeError:
-                raise BadRequestError('body json is invalid')
-            self._request_body = self._form_pipeline(body_form, json_body)
+        if body_form:
+            payload = self.get_request_json()
+            self._request_body = self._form_pipeline(body_form, payload)
 
     def perform_request_pipelines(self):
         self._query_form()
@@ -100,6 +108,8 @@ class ApiView(View, metaclass=ApiViewMeta, checkmeta=False):
             if settings.DEBUG:
                 raise e
             return self._handle_http_error(InternalServerError())
+
+    dispatch.csrf_exempt = True
 
     def execute(self, request, *args, **kwargs):
         raise NotImplementedError

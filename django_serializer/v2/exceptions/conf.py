@@ -9,8 +9,8 @@ class IncorrectMetaException(SerializerException):
         self.errors = errors
 
     def __str__(self):
-        errors = ','.join(self.errors)
-        return f'Meta class of {self.clazz} is incorrect: {errors}'
+        errors = '\n'.join(map(lambda s: f'* {s}', self.errors))
+        return f'Meta class of {self.clazz} is incorrect \n{errors}'
 
     def __repr__(self):
         return self.__str__()
