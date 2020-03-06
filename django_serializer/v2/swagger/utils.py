@@ -1,8 +1,10 @@
 from django import forms
-from django.forms import ModelForm, modelform_factory
+from django.conf import settings
+from django.forms import ModelForm
 from marshmallow import Schema, fields
 
-from django_serializer.v2.exceptions import HttpError
+from django_serializer.v2.exceptions import HttpError, \
+    IncorrectSettingsException
 
 FORM_FIELD_MAPPING = {
     forms.IntegerField: fields.Int,
@@ -18,16 +20,23 @@ FORM_FIELD_MAPPING = {
     forms.URLField: fields.Str
 }
 
+extra_fields = getattr(
+    settings, 'FORM_FIELD_MAPPING', None
+)
+if extra_fields:
+    if not isinstance(extra_fields, dict):
+        raise IncorrectSettingsException(
+            '`FORM_FIELD_MAPPING` has incorrect type'
+        )
+    FORM_FIELD_MAPPING.update(extra_fields)
+
 
 def form2schema(form: forms.Form) -> Schema:
     if form is None:
         return None
 
     if issubclass(form, ModelForm):
-        # ModelForm по умолчанию не инициализирована, поэтому надо применить
-        # modelform_factory, чтобы получить поля
-        form = modelform_factory(form.model, fields=form.fields)
-        form_fields = form.base_fields
+        form_fields = form().base_fields
     else:
         form_fields = form.declared_fields
 
@@ -45,16 +54,16 @@ def schema_factory(name, arg_names, base_class=Schema):
     def __init__(self, **kwargs):
         for key, value in kwargs.items():
             if key not in arg_names:
-                raise TypeError("Argument %s is not valid for %s"
+                raise TypeError('Argument %s is not valid for %s'
                                 % (key, self.__class__.__name__))
             self._declared_fields[key] = value
         base_class.__init__(self)
 
-    new_class = type(name, (base_class,), {"__init__": __init__})
+    new_class = type(name, (base_class,), {'__init__': __init__})
     return new_class
 
 
-def _generate_error_schema(swagger, error: HttpError) -> Schema:
+def generate_error_schema(swagger, error: HttpError) -> Schema:
     key = ''.join([str(error.http_code), error.alias, error.description])
     try:
         schema = swagger.error_classes[key]
@@ -71,16 +80,16 @@ def _generate_error_schema(swagger, error: HttpError) -> Schema:
     return schema
 
 
-def _merge_schemas(body_schema: Schema, model_schema: Schema) -> Schema:
+def merge_schemas(body_schema: Schema, model_schema: Schema) -> Schema:
     if body_schema is None and model_schema is None:
         return None
     elif body_schema is None or model_schema is None:
         return body_schema or model_schema
 
     common_fields = {}
-    for k, v in body_schema.declared_fields.items():
+    for k, v in body_schema._declared_fields.items():
         common_fields[k] = v
-    for k, v in model_schema.declared_fields.items():
+    for k, v in model_schema._declared_fields.items():
         common_fields[k] = v
     schema = schema_factory('body_form_schema', common_fields.keys())
     schema(**common_fields)

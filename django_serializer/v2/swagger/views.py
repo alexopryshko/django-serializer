@@ -1,6 +1,6 @@
 from django.http import JsonResponse
 
-from django_serializer.swagger.base import Swagger
+from django_serializer.v2.swagger.base import Swagger
 
 
 def index(request):

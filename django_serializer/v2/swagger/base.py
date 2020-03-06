@@ -3,7 +3,7 @@ from apispec.ext.marshmallow import MarshmallowPlugin
 from django import urls
 from django.conf import settings
 
-from django_serializer.swagger.utils import form2schema, _merge_schemas
+from django_serializer.v2.swagger import utils
 from django_serializer.v2.exceptions import HttpError
 from django_serializer.v2.views import ApiView
 
@@ -41,24 +41,23 @@ class Swagger:
                 continue
 
     def _generate_response(self, schema, description='success'):
-        from django_serializer.swagger.utils import _generate_error_schema
         if issubclass(type(schema), HttpError):
             description = schema.description
-            schema = _generate_error_schema(self, schema)
+            schema = utils.generate_error_schema(self, schema)
         schema_name = self.ma_spec.schema_name_resolver(schema)
         return {'description': description,
                 'content': {'application/json': {'schema': schema_name}}}
 
     def _generate_request_body(self, schema):
-        return {"content": {"application/json": {
-            "schema": self.ma_spec.converter.schema2jsonschema(schema)
+        return {'content': {'application/json': {
+            'schema': self.ma_spec.converter.schema2jsonschema(schema)
         }}}
 
     def _resolve_forms(self, meta):
-        query_schema = form2schema(getattr(meta, 'query_form', None))
-        body_schema = _merge_schemas(
-            form2schema(getattr(meta, 'body_form', None)),
-            form2schema(getattr(meta, 'model_form', None)))
+        query_schema = utils.form2schema(getattr(meta, 'query_form', None))
+        body_schema = utils.merge_schemas(
+            utils.form2schema(getattr(meta, 'body_form', None)),
+            utils.form2schema(getattr(meta, 'model_form', None)))
 
         parameters = {}
         if query_schema is not None:
@@ -94,19 +93,18 @@ class Swagger:
         return {meta.method.value: operation}
 
     def _generate_paths(self):
-        for item in self.urls_views.items():
-            url, view, meta = item[0], item[1], item[1].Meta
+        for url, view in self.urls_views.items():
             self._spec.path(
                 url,
-                schema=meta.serializer,
-                summary=meta.summary,
-                description=meta.description,
+                schema=view.Meta.serializer,
+                summary=view.Meta.summary,
+                description=view.Meta.description,
                 view=view,
-                operations=self._generate_operations(meta),
+                operations=self._generate_operations(view.Meta),
             )
 
     def _generate_tags(self):
-        [self._spec.tag({"name": tag, "description": tag}) for tag in self.tags]
+        [self._spec.tag({'name': tag, 'description': tag}) for tag in self.tags]
 
     def generate(self):
         self._get_views()
