@@ -1,5 +1,6 @@
 from django import forms
 
+from django_serializer.v2.exceptions import BadRequestError, NotFoundError
 from django_serializer.v2.serializer import ModelSerializer, Serializer, fields
 from django_serializer.v2.views import (
     CreateApiView,
@@ -34,6 +35,7 @@ class SomeModelGetView(GetApiView):
     class Meta:
         tags = ['get']
         model = SomeModel
+        errors = [BadRequestError, NotFoundError, ]
         serializer = SomeModelSerializer
 
     def has_permissions(self, obj: SomeModel) -> bool:
