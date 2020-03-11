@@ -44,6 +44,8 @@ class Swagger:
         if issubclass(type(schema), HttpError):
             description = schema.description
             schema = utils.generate_error_schema(self, schema)
+        if schema is None:
+            return {'description': description}
         schema_name = self.ma_spec.schema_name_resolver(schema)
         return {'description': description,
                 'content': {'application/json': {'schema': schema_name}}}
@@ -54,7 +56,10 @@ class Swagger:
         }}}
 
     def _resolve_forms(self, meta):
-        query_schema = utils.form2schema(getattr(meta, 'query_form', None))
+        query_schema = utils.merge_schemas(
+            utils.form2schema(getattr(meta, 'query_form', None)),
+            utils.form2schema(getattr(getattr(meta, 'paginator', None),
+                                      'form', None)))
         body_schema = utils.merge_schemas(
             utils.form2schema(getattr(meta, 'body_form', None)),
             utils.form2schema(getattr(meta, 'model_form', None)))

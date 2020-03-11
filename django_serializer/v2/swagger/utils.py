@@ -14,10 +14,10 @@ FORM_FIELD_MAPPING = {
     forms.DateTimeField: fields.DateTime,
     forms.TimeField: fields.Time,
     forms.DecimalField: fields.Decimal,
-    forms.EmailField: fields.Str,
+    forms.EmailField: fields.Email,
     forms.FloatField: fields.Float,
     # forms.ImageField: ImageField,
-    forms.URLField: fields.Str
+    forms.URLField: fields.Url
 }
 
 extra_fields = getattr(
@@ -80,16 +80,16 @@ def generate_error_schema(swagger, error: HttpError) -> Schema:
     return schema
 
 
-def merge_schemas(body_schema: Schema, model_schema: Schema) -> Schema:
-    if body_schema is None and model_schema is None:
+def merge_schemas(first_schema: Schema, second_schema: Schema) -> Schema:
+    if first_schema is None and second_schema is None:
         return None
-    elif body_schema is None or model_schema is None:
-        return body_schema or model_schema
+    elif first_schema is None or second_schema is None:
+        return first_schema or second_schema
 
     common_fields = {}
-    for k, v in body_schema._declared_fields.items():
+    for k, v in first_schema._declared_fields.items():
         common_fields[k] = v
-    for k, v in model_schema._declared_fields.items():
+    for k, v in second_schema._declared_fields.items():
         common_fields[k] = v
     schema = schema_factory('body_form_schema', common_fields.keys())
     schema(**common_fields)
