@@ -21,12 +21,12 @@ FORM_FIELD_MAPPING = {
 }
 
 extra_fields = getattr(
-    settings, 'FORM_FIELD_MAPPING', None
+    settings, 'SERIALIZER_FORM_FIELD_MAPPING', None
 )
 if extra_fields:
     if not isinstance(extra_fields, dict):
         raise IncorrectSettingsException(
-            '`FORM_FIELD_MAPPING` has incorrect type'
+            '`SERIALIZER_FORM_FIELD_MAPPING` has incorrect type'
         )
     FORM_FIELD_MAPPING.update(extra_fields)
 
