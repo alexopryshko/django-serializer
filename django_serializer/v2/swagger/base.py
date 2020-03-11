@@ -2,9 +2,10 @@ from apispec import APISpec
 from apispec.ext.marshmallow import MarshmallowPlugin
 from django import urls
 from django.conf import settings
+from django.forms import forms
 
 from django_serializer.v2.swagger import utils
-from django_serializer.v2.exceptions import HttpError
+from django_serializer.v2.exceptions import HttpError, HttpFormError
 from django_serializer.v2.views import ApiView
 
 
@@ -46,9 +47,8 @@ class Swagger:
             schema = utils.generate_error_schema(self, schema)
         if schema is None:
             return {'description': description}
-        schema_name = self.ma_spec.schema_name_resolver(schema)
         return {'description': description,
-                'content': {'application/json': {'schema': schema_name}}}
+                'content': {'application/json': {'schema': schema}}}
 
     def _generate_request_body(self, schema):
         return {'content': {'application/json': {
@@ -75,14 +75,20 @@ class Swagger:
         return parameters
 
     def _generate_operations(self, meta):
+        parameters = self._resolve_forms(meta)
+        if len(parameters) != 0:
+            meta.errors.append(HttpFormError)
+
         responses = {200: self._generate_response(meta.serializer)}
         for err in meta.errors:
-            err = err()
+            if err == HttpFormError:
+                err = err(forms.Form())
+            else:
+                err = err()
             responses.update({err.http_code: self._generate_response(err)})
 
-        [self.tags.add(tag) for tag in meta.tags]
-
-        parameters = self._resolve_forms(meta)
+        for tag in meta.tags:
+            self.tags.add(tag)
 
         operation = {
             'responses': responses,
@@ -94,7 +100,6 @@ class Swagger:
 
         if parameters.get('requestBody', False):
             operation.update({'requestBody': parameters['requestBody']})
-
         return {meta.method.value: operation}
 
     def _generate_paths(self):
@@ -109,7 +114,8 @@ class Swagger:
             )
 
     def _generate_tags(self):
-        [self._spec.tag({'name': tag, 'description': tag}) for tag in self.tags]
+        for tag in self.tags:
+            self._spec.tag({'name': tag, 'description': tag})
 
     def generate(self):
         self._get_views()

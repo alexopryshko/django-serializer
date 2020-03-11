@@ -7,8 +7,8 @@ from django.urls import path
 from django_serializer.v2.swagger import views
 
 
-class SwaggerConfig(AppConfig):
-    name = 'django_serializer.v2.swagger'
+class DjangoSerializer(AppConfig):
+    name = 'django_serializer'
 
     def ready(self):
         urls = importlib.import_module(settings.ROOT_URLCONF)

@@ -31,52 +31,38 @@ if extra_fields:
     FORM_FIELD_MAPPING.update(extra_fields)
 
 
-def form2schema(form: forms.Form) -> Schema:
-    if form is None:
+def form2schema(field: forms.Form) -> Schema:
+    if field is None:
         return None
 
-    if issubclass(form, ModelForm):
-        form_fields = form().base_fields
+    if issubclass(field, ModelForm):
+        form_fields = field().base_fields
     else:
-        form_fields = form.declared_fields
-
-    schema = schema_factory(str(id(form)), form_fields.keys())
+        form_fields = field.declared_fields
 
     schema_fields = {}
-    for name, form in form_fields.items():
+    for name, field in form_fields.items():
         schema_fields.update(
-            {name: FORM_FIELD_MAPPING[type(form)](required=form.required)})
-    schema = schema(**schema_fields)
+            {name: FORM_FIELD_MAPPING[type(field)](required=field.required)})
+    schema = Schema.from_dict(schema_fields)
     return schema
 
 
-def schema_factory(name, arg_names, base_class=Schema):
-    def __init__(self, **kwargs):
-        for key, value in kwargs.items():
-            if key not in arg_names:
-                raise TypeError('Argument %s is not valid for %s'
-                                % (key, self.__class__.__name__))
-            self._declared_fields[key] = value
-        base_class.__init__(self)
-
-    new_class = type(name, (base_class,), {'__init__': __init__})
-    return new_class
-
-
 def generate_error_schema(swagger, error: HttpError) -> Schema:
-    key = ''.join([str(error.http_code), error.alias, error.description])
-    try:
-        schema = swagger.error_classes[key]
-    except KeyError:
-        schema = schema_factory(
-            ''.join([i.capitalize() for i in error.description.split()]),
-            ['status', 'message', 'data'])
-        schema = schema(
-            status=fields.String(example=error.alias),
-            message=fields.String(example=error.description),
-            data=fields.Dict(),
-        )
-        swagger.error_classes[key] = schema
+    key = ''.join([str(error.http_code), error.alias])
+    if swagger.error_classes.get(key) is not None:
+        return swagger.error_classes[key]
+    schema_fields = dict(status=fields.String(example=error.alias),
+                         message=fields.String(example=error.description),
+                         data=fields.Dict())
+    if getattr(error, 'field_problems', None) is not None:
+        schema_fields.update({'fields_problems': fields.Dict()})
+
+    schema = Schema.from_dict(
+        schema_fields,
+        name=''.join([i.capitalize() for i in error.description.split()])
+    )
+    swagger.error_classes[key] = schema
     return schema
 
 
@@ -91,6 +77,5 @@ def merge_schemas(first_schema: Schema, second_schema: Schema) -> Schema:
         common_fields[k] = v
     for k, v in second_schema._declared_fields.items():
         common_fields[k] = v
-    schema = schema_factory('body_form_schema', common_fields.keys())
-    schema(**common_fields)
+    schema = Schema.from_dict(common_fields)
     return schema

@@ -36,7 +36,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'tests.tproj.app',
-    'django_serializer.v2.swagger.apps.SwaggerConfig'
+    'django_serializer.apps.DjangoSerializer'
 ]
 
 MIDDLEWARE = [

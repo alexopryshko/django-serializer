@@ -4,7 +4,6 @@ from marshmallow import fields as f
 from django_serializer.v2.swagger.utils import form2schema
 from tests.tproj.generic_views import SomeModelGetView, SomeModelCreateView, \
     SomeModelUpdateView, SomeModelDeleteView, PaginateListApiView
-from tests.tproj.urls import urlpatterns
 
 
 class TestSwagger:
@@ -22,33 +21,38 @@ class TestSwagger:
             u = forms.URLField()
 
         schema = form2schema(Form)
-        assert str(schema.declared_fields['i']) == str(f.Integer(required=True))
-        assert str(schema.declared_fields['f']) == str(f.Float(required=True))
-        assert str(schema.declared_fields['dec']) == \
+        assert str(schema._declared_fields['i']) == str(f.Integer(
+            required=True))
+        assert str(schema._declared_fields['f']) == str(f.Float(required=True))
+        assert str(schema._declared_fields['dec']) == \
                str(f.Decimal(required=True))
 
-        assert str(schema.declared_fields['b']) == str(f.Boolean(required=True))
-        assert str(schema.declared_fields['c']) == str(f.String(required=True))
-        assert str(schema.declared_fields['e']) == str(f.Email(required=True))
-        assert str(schema.declared_fields['u']) == str(f.Url(required=True))
+        assert str(schema._declared_fields['b']) == str(
+            f.Boolean(required=True))
+        assert str(schema._declared_fields['c']) == str(f.String(required=True))
+        assert str(schema._declared_fields['e']) == str(f.Email(required=True))
+        assert str(schema._declared_fields['u']) == str(f.Url(required=True))
 
-        assert str(schema.declared_fields['d']) == str(f.Date(required=True))
-        assert str(schema.declared_fields['dt']) == \
+        assert str(schema._declared_fields['d']) == str(f.Date(required=True))
+        assert str(schema._declared_fields['dt']) == \
                str(f.DateTime(required=True))
 
-        assert str(schema.declared_fields['i_not_required']) == str(
+        assert str(schema._declared_fields['i_not_required']) == str(
             f.Integer(required=False))
 
     def test_swagger(self, client):
         resp = client.get('/swagger.json')
         json = resp.json()
-        assert sorted(list(json['components']['schemas'].keys())) == sorted([
+        assert set((json['components']['schemas'].keys())) == {
             'ListSomeModelSerializer', 'SomeModelSerializer', 'TestSerializer',
-            'BadRequest', 'NotFound'
-        ])
-        assert sorted(list(json['paths'].keys()) + ['/swagger.json']) == \
-               sorted(list(map(lambda path: f'/{path.pattern._route}',
-                               urlpatterns)))
+            'BadRequest', 'NotFound'}
+        assert set((json['paths'].keys())) == {'/500', '/create', '/delete',
+                                               '/get', '/get_model',
+                                               '/get_query', '/list',
+                                               '/paginate_list', '/post',
+                                               '/post_body',
+                                               '/serializer',
+                                               '/serializer_many', '/update'}
 
     def test_get_view(self, client):
         resp = client.get('/swagger.json')
@@ -77,7 +81,7 @@ class TestSwagger:
         assert sorted(list(path_body['properties'].keys())) == ['f', 'i',
                                                                 'nullable']
 
-        assert len(path_responses.keys()) == 1
+        assert len(path_responses.keys()) == 2
         assert path_responses['200']['content']['application/json']['schema'][
                    '$ref'] == '#/components/schemas/SomeModelSerializer'
 
@@ -93,7 +97,7 @@ class TestSwagger:
         assert sorted(list(path_body['properties'].keys())) == ['f', 'i', 'id',
                                                                 'nullable']
 
-        assert len(path_responses.keys()) == 1
+        assert len(path_responses.keys()) == 2
         assert path_responses['200']['content']['application/json']['schema'][
                    '$ref'] == '#/components/schemas/SomeModelSerializer'
 
@@ -120,7 +124,7 @@ class TestSwagger:
         assert sorted(list(map(lambda i: i['name'], path_parameters))) == \
                ['from_id', 'limit']
 
-        assert len(path_responses.keys()) == 1
+        assert len(path_responses.keys()) == 2
         assert path_responses['200']['content']['application/json']['schema'][
                    '$ref'] == '#/components/schemas/ListSomeModelSerializer'
 
