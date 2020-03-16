@@ -62,14 +62,17 @@ class ApiView(View, metaclass=ApiViewMeta, checkmeta=False):
         self._query_form()
         self._body_form()
 
-    @classmethod
-    def _serializer_pipeline(cls, response):
-        if cls.Meta.serializer:
-            return cls.Meta.serializer().dump(
+    def _serializer_pipeline(self, response):
+        if self.Meta.serializer:
+            kwargs = self.get_serializer_kwargs()
+            return self.Meta.serializer(**kwargs).dump(
                 response,
-                many=cls.Meta.serializer_many
+                many=self.Meta.serializer_many
             )
         return response
+
+    def get_serializer_kwargs(self):
+        return {}
 
     @staticmethod
     def _generic_response(response):
