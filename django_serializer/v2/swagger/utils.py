@@ -6,6 +6,17 @@ from marshmallow import Schema, fields
 from django_serializer.v2.exceptions import HttpError, \
     IncorrectSettingsException
 
+
+class IntList(fields.List):
+    def __init__(self, *args, **kwargs):
+        super().__init__(fields.Integer, *args, **kwargs)
+
+
+class StrList(fields.List):
+    def __init__(self, *args, **kwargs):
+        super().__init__(fields.String, *args, **kwargs)
+
+
 FORM_FIELD_MAPPING = {
     forms.IntegerField: fields.Int,
     forms.BooleanField: fields.Bool,
@@ -17,7 +28,9 @@ FORM_FIELD_MAPPING = {
     forms.EmailField: fields.Email,
     forms.FloatField: fields.Float,
     # forms.ImageField: ImageField,
-    forms.URLField: fields.Url
+    forms.URLField: fields.Url,
+    forms.ModelMultipleChoiceField: IntList,
+    forms.MultipleChoiceField: StrList,
 }
 
 extra_fields = getattr(

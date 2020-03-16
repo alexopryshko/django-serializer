@@ -1,7 +1,7 @@
 from django import forms
 from marshmallow import fields as f
 
-from django_serializer.v2.swagger.utils import form2schema
+from django_serializer.v2.swagger.utils import form2schema, IntList, StrList
 from tests.tproj.generic_views import SomeModelGetView, SomeModelCreateView, \
     SomeModelUpdateView, SomeModelDeleteView, PaginateListApiView
 
@@ -19,6 +19,8 @@ class TestSwagger:
             dt = forms.DateTimeField()
             e = forms.EmailField()
             u = forms.URLField()
+            mc = forms.MultipleChoiceField()
+            mmc = forms.ModelMultipleChoiceField(queryset=None)
 
         schema = form2schema(Form)
         assert str(schema._declared_fields['i']) == str(f.Integer(
@@ -39,6 +41,10 @@ class TestSwagger:
 
         assert str(schema._declared_fields['i_not_required']) == str(
             f.Integer(required=False))
+        assert str(schema._declared_fields['mc']) == str(
+            StrList(required=True))
+        assert str(schema._declared_fields['mmc']) == str(
+            IntList(required=True))
 
     def test_swagger(self, client):
         resp = client.get('/swagger.json')
