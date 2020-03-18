@@ -78,7 +78,7 @@ class GetApiView(CheckPermissionsMixin, ObjectMixin, ApiView,
 class UpdateApiViewMeta(ApiViewMeta):
     class Meta(ApiViewMeta.Meta):
         method: HttpMethod = HttpMethod.POST
-        body_form: Type[forms.Form] = GetApiForm
+        body_form: Type[forms.BaseForm] = GetApiForm
         model: Type[Model] = None
         model_form: Type[forms.ModelForm] = None
         object_key: str = 'id'
@@ -107,7 +107,7 @@ class UpdateApiView(ObjectMixin, FormMixin, ApiView,
 class DeleteApiViewMeta(ApiViewMeta):
     class Meta(ApiViewMeta.Meta):
         method: HttpMethod = HttpMethod.POST
-        body_form: Type[forms.Form] = GetApiForm
+        body_form: Type[forms.BaseForm] = GetApiForm
         model: Type[Model] = None
         object_key: str = 'id'
 

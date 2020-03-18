@@ -51,26 +51,26 @@ class TestMeta:
 
         ('query_form', 1, ['`query_form` has incorrect type, '
                            'should be subclass of '
-                           '`<class \'django.forms.forms.Form\'>`']),
+                           '`<class \'django.forms.forms.BaseForm\'>`']),
         ('query_form', Exception, ['`query_form` has incorrect type, '
                                    'should be subclass of '
-                                   '`<class \'django.forms.forms.Form\'>`']),
+                                   '`<class \'django.forms.forms.BaseForm\'>`']),
         ('query_form', Form, None),
 
         ('body_form', 1, ['`body_form` has incorrect type, '
                           'should be subclass of '
-                          '`<class \'django.forms.forms.Form\'>`']),
+                          '`<class \'django.forms.forms.BaseForm\'>`']),
         ('body_form', Exception, ['`body_form` has incorrect type, '
                                   'should be subclass of '
-                                  '`<class \'django.forms.forms.Form\'>`']),
+                                  '`<class \'django.forms.forms.BaseForm\'>`']),
         ('body_form', Form, None),
 
         ('body_form', 1, ['`body_form` has incorrect type, '
                           'should be subclass of '
-                          '`<class \'django.forms.forms.Form\'>`']),
+                          '`<class \'django.forms.forms.BaseForm\'>`']),
         ('body_form', Exception, ['`body_form` has incorrect type, '
                                   'should be subclass of '
-                                  '`<class \'django.forms.forms.Form\'>`']),
+                                  '`<class \'django.forms.forms.BaseForm\'>`']),
         ('body_form', Form, None),
 
         ('serializer', 1,

@@ -3,7 +3,7 @@ import enum
 import inspect
 from typing import Optional, List, Type, Union, _GenericAlias
 
-from django.forms import Form
+from django.forms import BaseForm
 
 from django_serializer.v2.exceptions import IncorrectMetaException, HttpError
 from django_serializer.v2.serializer import Serializer
@@ -26,8 +26,8 @@ class ApiViewMeta(type):
         tags: List[str] = []
         summary: Optional[str] = None
         description: Optional[str] = None
-        query_form: Optional[Type[Form]] = None
-        body_form: Optional[Type[Form]] = None
+        query_form: Optional[Type[BaseForm]] = None
+        body_form: Optional[Type[BaseForm]] = None
         serializer: Optional[Type[Serializer]] = None
         serializer_many: bool = False
         errors: List[Type[HttpError]] = []
