@@ -31,6 +31,7 @@ FORM_FIELD_MAPPING = {
     forms.URLField: fields.Url,
     forms.ModelMultipleChoiceField: IntList,
     forms.MultipleChoiceField: StrList,
+    forms.ModelChoiceField: fields.Int,
 }
 
 extra_fields = getattr(

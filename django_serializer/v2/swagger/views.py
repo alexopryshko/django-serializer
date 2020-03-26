@@ -6,4 +6,7 @@ from django_serializer.v2.swagger.base import Swagger
 def index(request):
     swagger = Swagger()
     swagger.generate()
-    return JsonResponse(swagger.spec)
+    response = JsonResponse(swagger.spec)
+    response['Access-Control-Allow-Origin'] = "*"
+    response['Access-Control-Allow-Methods'] = "GET, OPTIONS"
+    return response
