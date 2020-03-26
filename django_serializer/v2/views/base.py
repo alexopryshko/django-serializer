@@ -1,4 +1,5 @@
 import json
+import logging
 from json import JSONDecodeError
 from typing import Mapping, Type
 
@@ -19,6 +20,16 @@ from django_serializer.v2.views.meta import ApiViewMeta
 
 class ApiView(View, metaclass=ApiViewMeta, checkmeta=False):
     Meta = ApiViewMeta.Meta
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self._logger = logging.getLogger(
+            f'django_serializer.views.{self.__class__.__name__}'
+        )
+
+    @property
+    def logger(self):
+        return self._logger
 
     @property
     def request_query(self) -> Mapping:
@@ -110,6 +121,7 @@ class ApiView(View, metaclass=ApiViewMeta, checkmeta=False):
         except Exception as e:
             if settings.DEBUG:
                 raise e
+            self.logger.exception(f'Unhandled exception on {self.request.path}')
             return self._handle_http_error(InternalServerError())
 
     dispatch.csrf_exempt = True
