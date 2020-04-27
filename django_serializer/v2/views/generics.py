@@ -147,7 +147,9 @@ class ListApiView(CheckPermissionsMixin, ApiView,
         return self.Meta.model.objects.all().order_by(*self.Meta.ordering)
 
     def build_response(self, qs, qs_after_paginator=None):
-        return qs_after_paginator or qs
+        if qs_after_paginator is None:
+            return qs
+        return qs_after_paginator
 
     def execute(self, request, *args, **kwargs):
         self.check_permissions()
