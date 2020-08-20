@@ -1,7 +1,8 @@
 import copy
 import enum
 import inspect
-from typing import Optional, List, Type, Union, _GenericAlias
+import sys
+from typing import Optional, List, Type, Union
 
 from django.forms import BaseForm
 
@@ -45,7 +46,9 @@ class ApiViewMeta(type):
             meta = mcs.merge_options(options, base_options)
             errors = []
             mcs.check_meta_extra(meta, errors)
-            mcs.check_meta(meta, errors)
+            mj, mn = sys.version_info[:2]
+            if mj >= 3 and mn >= 7:
+                mcs.check_meta(meta, errors)
             if errors:
                 raise IncorrectMetaException(name, errors)
             attrs['Meta'] = meta
@@ -114,6 +117,8 @@ class ApiViewMeta(type):
 
     @classmethod
     def check_meta(mcs, meta: Type, errors: List):
+        from typing import _GenericAlias
+
         manual_validation = mcs.Meta.__manual_validation__
         for field_name in dir(mcs.Meta):
             if field_name.startswith('_') or field_name in manual_validation:
