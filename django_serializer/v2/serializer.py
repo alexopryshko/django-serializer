@@ -114,7 +114,7 @@ class ModelSerializerMeta(SchemaMeta):
             try:
                 field_class = SERIALIZER_FIELD_MAPPING[model_field_class]
                 field_class_instance = field_class()
-                field_class_instance.metadata = dict(description=f"{model_field.verbose_name}")
+                field_class_instance.metadata = dict(description=model_field.verbose_name)
                 attrs[model_field.attname] = field_class_instance
             except KeyError:
                 errors.append(
