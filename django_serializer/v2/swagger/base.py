@@ -4,8 +4,8 @@ from django import urls
 from django.conf import settings
 from django.forms import forms
 
+from django_serializer.v2.exceptions import HttpFormError
 from django_serializer.v2.swagger import utils
-from django_serializer.v2.exceptions import HttpError, HttpFormError
 from django_serializer.v2.views import ApiView
 
 
@@ -41,10 +41,42 @@ class Swagger:
             except AttributeError:
                 continue
 
-    def _generate_response(self, schema, description='success'):
-        if issubclass(type(schema), HttpError):
-            description = schema.description
-            schema = utils.generate_error_schema(self, schema)
+    def _generate_response(self, schema, description='success', many=False):
+        response_schema = {'description': description}
+
+        if schema:
+            if many:
+                schema_wrapper = {
+                    'type': 'object',
+                    'properties': {
+                        'status': {
+                            'type': 'string',
+                            'default': 'true',
+                        },
+                        'data': {'type': 'array', 'items': schema},
+                    },
+                }
+            else:
+                schema_wrapper = {
+                    'type': 'object',
+                    'properties': {
+                        'status': {
+                            'type': 'string',
+                            'default': 'true',
+                        },
+                        'data': schema,
+                    },
+                }
+
+            response_schema.update(
+                {'content': {'application/json': {'schema': schema_wrapper}}}
+            )
+
+        return response_schema
+
+    def _generate_error_response(self, schema):
+        description = schema.description
+        schema = utils.generate_error_schema(self, schema)
         if schema is None:
             return {'description': description}
         return {'description': description,
@@ -79,13 +111,13 @@ class Swagger:
         if len(parameters) != 0:
             meta.errors.append(HttpFormError)
 
-        responses = {200: self._generate_response(meta.serializer)}
+        responses = {200: self._generate_response(meta.serializer, many=getattr(meta, 'serializer_many', False))}
         for err in meta.errors:
             if err == HttpFormError:
                 err = err(forms.Form())
             else:
                 err = err()
-            responses.update({err.http_code: self._generate_response(err)})
+            responses.update({err.http_code: self._generate_error_response(err)})
 
         for tag in meta.tags:
             self.tags.add(tag)
