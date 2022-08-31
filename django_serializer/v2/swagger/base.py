@@ -100,6 +100,13 @@ class Swagger:
 
         if parameters.get('requestBody', False):
             operation.update({'requestBody': parameters['requestBody']})
+
+        if getattr(meta, "description"):
+            operation.update({"description": meta.description})
+
+        if getattr(meta, "summary"):
+            operation.update({"summary": meta.summary})
+
         return {meta.method.value: operation}
 
     def _generate_paths(self):
