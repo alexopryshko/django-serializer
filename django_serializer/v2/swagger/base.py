@@ -1,8 +1,11 @@
+from typing import Union
+
 from apispec import APISpec
 from apispec.ext.marshmallow import MarshmallowPlugin
 from django import urls
 from django.conf import settings
 from django.forms import forms
+from django.utils.regex_helper import normalize
 
 from django_serializer.v2.swagger import utils
 from django_serializer.v2.exceptions import HttpError, HttpFormError
@@ -30,13 +33,30 @@ class Swagger:
     def spec(self):
         return self._spec.to_dict()
 
+    def generate_view_list(
+        self, resolver: Union[urls.URLResolver, urls.URLPattern], prefix: str
+    ):
+        if isinstance(resolver, urls.URLPattern):
+            available_paths = normalize(
+                f"{prefix}{resolver.pattern.regex.pattern}"
+            )
+            for path, args in available_paths:
+                yield resolver.callback, path
+        elif isinstance(resolver, urls.URLResolver):
+            for pattern in resolver.url_patterns:
+                yield from self.generate_view_list(
+                    pattern, f"{prefix}{str(resolver.pattern.regex.pattern)}"
+                )
+        else:
+            raise NotImplementedError
+
     def _get_views(self):
-        views = urls.get_resolver(None).reverse_dict.items()
+        resolver = urls.get_resolver()
+        views = set(self.generate_view_list(resolver, ""))
         for view, url in views:
             try:
                 class_ = view.view_class
                 if issubclass(class_, ApiView):
-                    url = '/' + url[0][0][0].lstrip('/')
                     self.urls_views[url] = class_
             except AttributeError:
                 continue
