@@ -1,5 +1,5 @@
 apispec==3.3.0
-Django==2.1
+Django==2.2.28
 pep8==1.7.1
 flake8==3.7.9
 twine==3.1.1
