@@ -8,7 +8,8 @@ BASE_DIR = path.abspath(path.dirname(__file__))
 def find_version():
     for line in open(path.join(BASE_DIR, 'django_serializer/__init__.py')):
         if line.startswith('__version__'):
-            return re.match(r"""__version__\s*=\s*(['"])([^'"]+)\1""", line).group(2)
+            return re.match(r"""__version__\s*=\s*(['"])([^'"]+)\1""",
+                            line).group(2)
 
 
 setup(
@@ -32,14 +33,14 @@ setup(
 
         'License :: OSI Approved :: MIT License',
 
-        'Programming Language :: Python :: 3.4',
-        'Programming Language :: Python :: 3.5',
         'Programming Language :: Python :: 3.6',
+        'Programming Language :: Python :: 3.7',
     ],
     keywords='django-serializer setuptools development',
     packages=find_packages(exclude=['contrib', 'docs', 'tests*']),
     install_requires=[
-        'Django>=1.10',
-        'psycopg2>=2.6.2'
+        'Django>=2.1',
+        'marshmallow>=3.5.0',
+        'apispec>=3.3.0',
     ]
 )
