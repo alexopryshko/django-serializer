@@ -87,7 +87,7 @@ urlpatterns = [
 
 
 ## Contribution
-Feel free to open pull request to the latest rc-<version> branch.
+Feel free to open pull request to the latest `rc-<version>` branch.
 
 ## Licence 
 See [LICENSE](https://github.com/alexopryshko/django-serializer/blob/master/LICENSE.txt)
