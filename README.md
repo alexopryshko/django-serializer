@@ -2,7 +2,7 @@
 
 ## Installation
 
-django-serializer packaged and delivered via pypi
+django-serializer packaged and delivered via [pypi](https://pypi.org/project/django-serializer/)
 
 `pip install django-serializer`
 
