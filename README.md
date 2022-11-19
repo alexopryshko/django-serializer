@@ -11,6 +11,9 @@ Serialization provided by [marshmallow](https://github.com/marshmallow-code/mars
 The library provide generic and custom CRUD views and paginators.
 Automatic swagger generation provided by [apispec](https://github.com/marshmallow-code/apispec)
 
+# Changelog
+See [HISTORY.md](https://github.com/alexopryshko/django-serializer/blob/master/HISTORY.md)
+
 ## Quickstart
 
 ### basic flow
@@ -87,4 +90,4 @@ urlpatterns = [
 Feel free to open pull request to the latest rc-<version> branch.
 
 ## Licence 
-See [LICENSE](https://github.com/alexopryshko/django-serializer/blob/1.0.0/LICENSE.txt)
+See [LICENSE](https://github.com/alexopryshko/django-serializer/blob/master/LICENSE.txt)
