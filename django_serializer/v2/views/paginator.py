@@ -30,13 +30,13 @@ class LimitOffsetPaginator(Paginator):
     default_offset = 0
     form = LimitOffsetPaginatorForm
 
-    def paginate(self, qs):
+    def paginate(self, qs: Union[Collection, QuerySet]):
         if self.data["all"]:
             return qs
 
         limit = self.data["limit"] or self.default_limit
         offset = self.data["offset"] or self.default_offset
-        return qs[offset : limit + offset]
+        return qs[offset: limit + offset]
 
 
 class FromIdPaginator(Paginator):
