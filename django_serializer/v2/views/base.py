@@ -73,27 +73,36 @@ class ApiView(View, metaclass=ApiViewMeta, checkmeta=False):
         self._query_form()
         self._body_form()
 
-    def _serializer_pipeline(self, response):
-        if self.Meta.serializer:
-            kwargs = self.get_serializer_kwargs()
-            return self.Meta.serializer(**kwargs).dump(
-                response,
-                many=self.Meta.serializer_many
-            )
-        return response
+    def get_serializer_class(self):
+        return self.Meta.serializer
 
     def get_serializer_kwargs(self):
-        return {}
+        return {
+            'context': {
+                'request': self.request
+            },
+            'many': self.Meta.serializer_many
+        }
 
-    @staticmethod
-    def _generic_response(response):
+    def get_serializer(self):
+        serializer_kwargs = self.get_serializer_kwargs()
+        serializer_class = self.get_serializer_class()
+        if serializer_class:
+            return serializer_class(**serializer_kwargs)
+
+    def _serializer_pipeline(self, response):
+        serializer = self.get_serializer()
+        if serializer:
+            return serializer.dump(response)
+        return response
+
+    def _generic_response(self, response):
         return {
             'status': 'ok',
             'data': response
         }
 
-    @staticmethod
-    def _json_response(response):
+    def _json_response(self, response):
         return JsonResponse(data=response)
 
     def perform_response_pipelines(self, response):
