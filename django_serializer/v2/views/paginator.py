@@ -1,6 +1,7 @@
-from typing import Type
+from typing import Collection, Iterable, Type, Union
 
 from django import forms
+from django.db.models import QuerySet
 
 from django_serializer.v2.views import ApiView
 
@@ -15,8 +16,27 @@ class Paginator:
     def validate_form(self):
         self.data = self.view._form_pipeline(self.form, self.view.request.GET)
 
-    def paginate(self, qs):
+    def paginate(self, qs: Union[Collection, QuerySet]):
         raise NotImplementedError
+
+
+class LimitOffsetPaginator(Paginator):
+    class LimitOffsetPaginatorForm(forms.Form):
+        limit = forms.IntegerField(min_value=1, max_value=100, required=False)
+        offset = forms.IntegerField(min_value=0, required=False)
+        all = forms.BooleanField(required=False)
+
+    default_limit = 20
+    default_offset = 0
+    form = LimitOffsetPaginatorForm
+
+    def paginate(self, qs):
+        if self.data["all"]:
+            return qs
+
+        limit = self.data["limit"] or self.default_limit
+        offset = self.data["offset"] or self.default_offset
+        return qs[offset : limit + offset]
 
 
 class FromIdPaginator(Paginator):
@@ -28,7 +48,7 @@ class FromIdPaginator(Paginator):
     condition_kwarg = None
     form = FromIdForm
 
-    def paginate(self, qs):
+    def paginate(self, qs: QuerySet):
         from_id = self.data['from_id']
         limit = self.data['limit'] or self.default_limit
         if from_id:
