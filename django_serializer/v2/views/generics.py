@@ -151,12 +151,20 @@ class ListApiView(CheckPermissionsMixin, ApiView,
             return qs
         return qs_after_paginator
 
+    def get_paginator_class(self) -> Optional[Type[Paginator]]:
+        return self.Meta.paginator
+
+    def get_paginator(self) -> Optional[Paginator]:
+        paginator_class = self.get_paginator_class()
+        if paginator_class:
+            return paginator_class(self)
+
     def execute(self, request, *args, **kwargs):
         self.check_permissions()
         qs = self.get_queryset()
         qs_after_paginator = None
-        if self.Meta.paginator:
-            paginator = self.Meta.paginator(self)
+        paginator = self.get_paginator()
+        if paginator:
             paginator.validate_form()
             qs_after_paginator = paginator.paginate(qs)
         return self.build_response(
