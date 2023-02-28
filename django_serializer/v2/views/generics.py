@@ -1,7 +1,7 @@
 from typing import Type, Optional
 
 from django import forms
-from django.db.models import Model
+from django.db.models import Model, QuerySet
 
 from django_serializer.v2.exceptions import HttpFormError, ForbiddenError
 from django_serializer.v2.serializer import Serializer
@@ -12,7 +12,7 @@ from django_serializer.v2.views.mixins import (
     ObjectMixin,
     CheckPermissionsMixin,
 )
-from django_serializer.v2.views.paginator import Paginator
+from django_serializer.v2.views.paginator import BasePaginator
 
 __all__ = (
     'CreateApiView', 'GetApiView', 'UpdateApiView', 'DeleteApiView',
@@ -132,7 +132,7 @@ class ListApiViewMeta(ApiViewMeta):
         model: Type[Model] = None
         serializer: Type[Serializer] = None
         serializer_many: bool = True
-        paginator: Optional[Type[Paginator]] = None
+        paginator: Optional[Type[BasePaginator]] = None
         ordering: tuple = ('id',)
 
 
@@ -151,19 +151,19 @@ class ListApiView(CheckPermissionsMixin, ApiView,
             return qs
         return qs_after_paginator
 
-    def get_paginator_class(self) -> Optional[Type[Paginator]]:
+    def get_paginator_class(self) -> Optional[Type[BasePaginator]]:
         return self.Meta.paginator
 
-    def get_paginator(self) -> Optional[Paginator]:
+    def get_paginator(self, qs: QuerySet) -> Optional[BasePaginator]:
         paginator_class = self.get_paginator_class()
         if paginator_class:
-            return paginator_class(self)
+            return paginator_class(self, qs)
 
     def execute(self, request, *args, **kwargs):
         self.check_permissions()
         qs = self.get_queryset()
         qs_after_paginator = None
-        paginator = self.get_paginator()
+        paginator = self.get_paginator(qs)
         if paginator:
             paginator.validate_form()
             qs_after_paginator = paginator.paginate(qs)
