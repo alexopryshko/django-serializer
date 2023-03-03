@@ -9,7 +9,7 @@ from django_serializer.v2.views import (
     DeleteApiView,
     ListApiView,
 )
-from django_serializer.v2.views.paginator import AscFromIdPaginator
+from django_serializer.v2.views.paginator import AscFromIdPaginator, LimitOffsetPaginator
 from tests.tproj.app.models import SomeModel
 
 
@@ -90,3 +90,11 @@ class PaginateListApiView(ListApiView):
             'count': qs.count(),
             'list': qs_after_paginator
         }
+
+
+class LimitOffsetPaginateListApiView(ListApiView):
+    class Meta:
+        tags = ['list']
+        model = SomeModel
+        serializer = SomeModelSerializer
+        paginator = LimitOffsetPaginator
