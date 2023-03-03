@@ -50,12 +50,12 @@ class TestSwagger:
         resp = client.get('/swagger.json')
         json = resp.json()
         assert set((json['components']['schemas'].keys())) == {
-            'ListSomeModelSerializer', 'SomeModelSerializer', 'TestSerializer',
-            'BadRequest', 'NotFound'}
+            'ListSomeModelSerializer', 'SomeModelSerializer', 'TestSerializer', 'BadRequest', 'NotFound'}
         assert set((json['paths'].keys())) == {'/500', '/create', '/delete',
                                                '/get', '/get_model',
                                                '/get_query', '/list',
                                                '/paginate_list', '/post',
+                                               '/limit_offset_paginate_list',
                                                '/post_body',
                                                '/serializer',
                                                '/serializer_many', '/update'}

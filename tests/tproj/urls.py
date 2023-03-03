@@ -18,4 +18,5 @@ urlpatterns = [
     path('delete', generic_views.SomeModelDeleteView.as_view()),
     path('list', generic_views.SimpleListApiView.as_view()),
     path('paginate_list', generic_views.PaginateListApiView.as_view()),
+    path('limit_offset_paginate_list', generic_views.LimitOffsetPaginateListApiView.as_view()),
 ]

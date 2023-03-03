@@ -221,3 +221,51 @@ class TestListApiView:
                                'nullable': 'without_permissions'}]},
             'status': 'ok',
         }
+
+    @pytest.mark.parametrize(
+        "search_query, index",
+        [
+            ({"limit": 2}, 0),
+            ({"offset": 2}, 1),
+            ({"limit": 2, "offset": 2}, 2),
+            ({"all": True}, 3),
+        ],
+    )
+    def test_limit_offset_paginate(
+        self,
+        client,
+        some_model,
+        some_model_2,
+        some_model_3,
+        some_model_without_perm,
+        search_query,
+        index,
+    ):
+        entities = (
+            (some_model, some_model_2),
+            (some_model_3, some_model_without_perm),
+            (some_model_3, some_model_without_perm),
+            (
+                some_model,
+                some_model_2,
+                some_model_3,
+                some_model_without_perm,
+            ),
+        )
+
+        resp = client.get("/limit_offset_paginate_list", search_query)
+        assert resp.status_code == 200
+        document = resp.json()
+        assert document == {
+            "data": [
+                {
+                    "created": i.created.isoformat(),
+                    "f": i.f,
+                    "i": i.i,
+                    "id": i.id,
+                    "nullable": i.nullable,
+                }
+                for i in entities[index]
+            ],
+            "status": "ok",
+        }
