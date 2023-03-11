@@ -41,8 +41,8 @@ setup(
     keywords='django-serializer setuptools development',
     packages=find_packages(exclude=['contrib', 'docs', 'tests*']),
     install_requires=[
-        'Django>=2.1',
-        'marshmallow>=3.5.0',
-        'apispec>=3.3.0',
+        'Django>=2.2',
+        'marshmallow>=3.14.0',
+        'apispec>=5.1.1',
     ]
 )
