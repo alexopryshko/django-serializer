@@ -88,7 +88,7 @@ class Swagger:
         if query_schema is not None:
             parameters.update({'query': self.ma_spec.converter
                               .schema2parameters(query_schema,
-                                                 default_in='query')})
+                                                 location='query')})
         if body_schema is not None:
             parameters.update(
                 {'requestBody': self._generate_request_body(body_schema)})
