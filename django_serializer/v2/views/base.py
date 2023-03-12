@@ -85,9 +85,9 @@ class ApiView(View, metaclass=ApiViewMeta, checkmeta=False):
         }
 
     def get_serializer(self):
-        serializer_kwargs = self.get_serializer_kwargs()
         serializer_class = self.get_serializer_class()
         if serializer_class:
+            serializer_kwargs = self.get_serializer_kwargs()
             return serializer_class(**serializer_kwargs)
 
     def _serializer_pipeline(self, response):
