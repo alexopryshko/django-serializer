@@ -1,7 +1,7 @@
 from django import forms
 
 from django_serializer.v2.exceptions import BadRequestError, NotFoundError
-from django_serializer.v2.serializer import ModelSerializer, Serializer, fields
+from django_serializer.v2.serializer import ModelSerializer, Serializer
 from django_serializer.v2.views import (
     CreateApiView,
     GetApiView,
@@ -11,6 +11,7 @@ from django_serializer.v2.views import (
 )
 from django_serializer.v2.views.paginator import AscFromIdPaginator, LimitOffsetPaginator
 from tests.tproj.app.models import SomeModel
+from marshmallow import fields
 
 
 class SomeModelForm(forms.ModelForm):

@@ -6,6 +6,14 @@
 - added django 2.2, 3.2, 4.0, 4.1 to test matrix
 
 - fix view discovery in swagger generation
+- add `django.db.models.BigAutoField` to serializer field mapping
+- add `django.db.models.SlugField` to serializer field mapping
+- add `django.db.models.DurationField` to serializer field mapping
+- add `django.db.models.FileField` to serializer field mapping
+- add `django.db.models.ImageField` to serializer field mapping
+- add `django.db.models.UUIDField` to serializer field mapping
+- add `django.db.models.GenericIPAddressField` to serializer field mapping
+- add new `django_serializer.v2.serializer.fields.FileField` to serialize file fields
 - add new `django_serializer.v2.views.paginator.BasePaginator`
 - add new `django_serializer.v2.views.paginator.LimitOffsetPaginator`
 - add new `django_serializer.v2.views.generics.ListApiView.get_paginator_class`
@@ -19,6 +27,7 @@
 - `django_serializer.v2.views.base.ApiView._serializer_pipeline` is instance method instead of static method
 - `django_serializer.v2.views.base.ApiView._generic_response` is instance method instead of static method
 - `django_serializer.v2.views.base.ApiView._json_response` is instance method instead of static method
+- `django_serializer.v2.serializer.fields` no longer importable, use `marshmallow.fields` instead
 
 ## internal changes
 - bump pytest==6.2.5

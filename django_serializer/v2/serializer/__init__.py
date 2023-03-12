@@ -2,35 +2,44 @@ from typing import Type, Set
 
 from django.conf import settings
 from django.db import models
-from marshmallow import Schema, fields
+from marshmallow import Schema, fields as mmfields
 from marshmallow.schema import SchemaMeta
+from .fields import FileField
 
 from django_serializer.v2.exceptions import (
     IncorrectMetaException,
     IncorrectSettingsException,
 )
 
+__all__ = ('SERIALIZER_FIELD_MAPPING', 'Serializer', 'ModelSerializer', 'ModelSerializerMeta', 'FileField')
+
 SERIALIZER_FIELD_MAPPING = {
-    models.AutoField: fields.Int,
-    models.BigIntegerField: fields.Int,
-    models.BooleanField: fields.Bool,
-    models.CharField: fields.Str,
-    models.CommaSeparatedIntegerField: fields.Str,
-    models.DateField: fields.Date,
-    models.DateTimeField: fields.DateTime,
-    models.TimeField: fields.Time,
-    models.DecimalField: fields.Decimal,
-    models.EmailField: fields.Str,
-    models.ForeignKey: fields.Int,
-    models.OneToOneField: fields.Int,
-    models.FloatField: fields.Float,
-    models.IntegerField: fields.Int,
-    models.PositiveIntegerField: fields.Int,
-    models.PositiveSmallIntegerField: fields.Int,
-    models.SmallIntegerField: fields.Int,
-    models.TextField: fields.Str,
-    # models.ImageField: ImageField,
-    models.URLField: fields.Str
+    models.AutoField: mmfields.Int,
+    models.BigAutoField: mmfields.Int,
+    models.BooleanField: mmfields.Bool,
+    models.SlugField: mmfields.Str,
+    models.CharField: mmfields.Str,
+    models.CommaSeparatedIntegerField: mmfields.Str,
+    models.DateField: mmfields.Date,
+    models.DateTimeField: mmfields.DateTime,
+    models.TimeField: mmfields.Time,
+    models.DurationField: mmfields.TimeDelta,
+    models.DecimalField: mmfields.Decimal,
+    models.EmailField: mmfields.Str,
+    models.ForeignKey: mmfields.Int,
+    models.OneToOneField: mmfields.Int,
+    models.FloatField: mmfields.Float,
+    models.IntegerField: mmfields.Int,
+    models.PositiveIntegerField: mmfields.Int,
+    models.PositiveSmallIntegerField: mmfields.Int,
+    models.SmallIntegerField: mmfields.Int,
+    models.BigIntegerField: mmfields.Int,
+    models.TextField: mmfields.Str,
+    models.FileField: FileField,
+    models.ImageField: FileField,
+    models.URLField: mmfields.Str,
+    models.UUIDField: mmfields.Str,
+    models.GenericIPAddressField: mmfields.Str,
 }
 extra_fields = getattr(
     settings, 'SERIALIZER_FIELD_MAPPING', None
