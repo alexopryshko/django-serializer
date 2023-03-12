@@ -3,8 +3,9 @@ import datetime
 import pytest
 
 from django_serializer.v2.exceptions import IncorrectMetaException
-from django_serializer.v2.serializer import Serializer, fields, ModelSerializer
+from django_serializer.v2.serializer import Serializer, ModelSerializer
 from tests.tproj.app.models import SomeModel
+from marshmallow import fields
 
 
 class TestSerializer:

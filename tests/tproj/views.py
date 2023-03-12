@@ -1,7 +1,8 @@
 from django import forms
 
-from django_serializer.v2.serializer import Serializer, fields
+from django_serializer.v2.serializer import Serializer
 from django_serializer.v2.views import ApiView, HttpMethod
+from marshmallow import fields
 
 
 class GetView(ApiView):
