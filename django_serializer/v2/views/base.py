@@ -1,18 +1,20 @@
+import inspect
 import json
 import logging
 from json import JSONDecodeError
-from typing import Mapping, Type
+from typing import List, Mapping, Tuple, Type
 
 from django.conf import settings
+from django.core import checks
 from django.forms import Form
 from django.http import JsonResponse
 from django.views import View
 
 from django_serializer.v2.exceptions import (
-    HttpNotImplementedError,
+    BadRequestError,
     HttpError,
     HttpFormError,
-    BadRequestError,
+    HttpNotImplementedError,
     InternalServerError,
 )
 from django_serializer.v2.views.meta import ApiViewMeta
@@ -60,8 +62,10 @@ class ApiView(View, metaclass=ApiViewMeta, checkmeta=False):
                 raise HttpFormError(form)
 
     def _query_form(self):
-        self._request_query = self._form_pipeline(self.Meta.query_form,
-                                                  self.request.GET)
+        self._request_query = self._form_pipeline(
+            self.Meta.query_form,
+            self.request.GET
+            )
 
     def _body_form(self):
         body_form = self.Meta.body_form
@@ -137,3 +141,72 @@ class ApiView(View, metaclass=ApiViewMeta, checkmeta=False):
 
     def execute(self, request, *args, **kwargs):
         raise NotImplementedError
+
+    @classmethod
+    def _check_tags(cls, meta, *args, **kwargs):
+        errors = []
+
+        tags = getattr(meta, 'tags', None)
+
+        if not isinstance(tags, (List, Tuple)):
+            errors.append(
+                checks.Warning(
+                    f'`{cls.__name__}.Meta.tags` variable has incorrect type {type(tags)}',
+                    hint=f'{cls.__name__}.Meta.tags should be list or tuple',
+                    obj=cls,
+                    id='django_serializer.meta.tags.W001', )
+            )
+        else:
+            for index, item in enumerate(tags):
+                if not isinstance(item, str):
+                    errors.append(
+                        checks.Warning(
+                            f'`{cls.__name__}.Meta.tags[{index}]` variable has incorrect type {type(item)}',
+                            hint=f'{cls.__name__}.Meta.tags[{index}] should be str',
+                            obj=cls,
+                            id='django_serializer.meta.tags.W002'
+                        )
+                    )
+
+        return errors
+
+    @classmethod
+    def _check_errors(cls, meta, *args, **kwargs):
+        meta_errors = getattr(meta, 'errors', [])
+        if not meta_errors:
+            return []
+
+        errors = []
+
+        if not isinstance(meta_errors, (List, Tuple)):
+            errors.append(
+                checks.Error(
+                    f'`{cls.__name__}.Meta.errors` variable has incorrect type {type(meta_errors)}',
+                    hint=f'{cls.__name__}.Meta.errors should be list or tuple',
+                    obj=cls,
+                    id='django_serializer.meta.errors.E001',
+                )
+            )
+        else:
+            for index, item in enumerate(meta_errors):
+                if not inspect.isclass(item) or not issubclass(item, HttpError):
+                    errors.append(
+                        checks.Error(
+                            f'`{cls.__name__}.Meta.errors[{index}]` variable has incorrect type {type(item)}',
+                            hint=f'`{cls.__name__}.Meta.errors[{index}]` should be subclass of django_serializer.v2.exceptions.http.HttpError',
+                            obj=cls,
+                            id='django_serializer.meta.errors.E002',
+                        )
+                    )
+
+        return errors
+
+    @classmethod
+    def check(cls, *args, **kwargs):
+        meta = cls.Meta
+
+        errors = []
+        errors.extend(cls._check_tags(meta, *args, **kwargs))
+        errors.extend(cls._check_errors(meta, *args, **kwargs))
+
+        return errors

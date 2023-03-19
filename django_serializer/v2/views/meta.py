@@ -45,7 +45,6 @@ class ApiViewMeta(type):
             base_options = mcs.find_base_options(bases)
             meta = mcs.merge_options(options, base_options)
             errors = []
-            mcs.check_meta_extra(meta, errors)
             mj, mn = sys.version_info[:2]
             if mj >= 3 and mn >= 7:
                 mcs.check_meta(meta, errors)
@@ -84,36 +83,6 @@ class ApiViewMeta(type):
                 annt = cls.__annotations__.get(name)
                 if annt is not None:
                     return annt
-
-    @classmethod
-    def check_meta_extra(mcs, meta: Type, errors: List):
-        tags = getattr(meta, 'tags', None)
-        if not tags:
-            errors.append('`tags` is required')
-        else:
-            if not isinstance(tags, List):
-                errors.append('`tags` variable has incorrect type, '
-                              'should be list')
-            else:
-                if any([not isinstance(item, str) for item in tags]):
-                    errors.append('`tags` item has incorrect type, '
-                                  'should be str')
-
-        meta_errors = getattr(meta, 'errors', [])
-        if meta_errors:
-            if not isinstance(meta_errors, List):
-                errors.append('`errors` variable has incorrect type, '
-                              'should be list')
-            else:
-                try:
-                    if any([not issubclass(item, HttpError)
-                            for item in meta_errors]):
-                        raise TypeError
-                except TypeError:
-                    errors.append('`errors` item has incorrect type, '
-                                  'should be subtype of HttpError')
-
-        return errors
 
     @classmethod
     def check_meta(mcs, meta: Type, errors: List):
