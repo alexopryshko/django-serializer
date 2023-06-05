@@ -14,9 +14,9 @@ from django_serializer.v2.views import ApiView
 
 class Swagger:
     def __init__(self):
-        self.project_name = getattr(settings, 'SWAGGER_PROJECT_NAME', 'default')
-        self.version = getattr(settings, 'SWAGGER_PROJECT_VERSION', '1.0.0')
-        self.openapi = getattr(settings, 'SWAGGER_OPENAPI_VERSION', '3.0.2')
+        self.project_name = getattr(settings, "SWAGGER_PROJECT_NAME", "default")
+        self.version = getattr(settings, "SWAGGER_PROJECT_VERSION", "1.0.0")
+        self.openapi = getattr(settings, "SWAGGER_OPENAPI_VERSION", "3.0.2")
         self._spec = APISpec(
             title=self.project_name,
             version=self.version,
@@ -37,9 +37,7 @@ class Swagger:
         self, resolver: Union[urls.URLResolver, urls.URLPattern], prefix: str
     ):
         if isinstance(resolver, urls.URLPattern):
-            available_paths = normalize(
-                f"{prefix}{resolver.pattern.regex.pattern}"
-            )
+            available_paths = normalize(f"{prefix}{resolver.pattern.regex.pattern}")
             for path, args in available_paths:
                 yield resolver.callback, path
         elif isinstance(resolver, urls.URLResolver):
@@ -61,37 +59,47 @@ class Swagger:
             except AttributeError:
                 continue
 
-    def _generate_response(self, schema, description='success'):
+    def _generate_response(self, schema, description="success"):
         if issubclass(type(schema), HttpError):
             description = schema.description
             schema = utils.generate_error_schema(self, schema)
         if schema is None:
-            return {'description': description}
-        return {'description': description,
-                'content': {'application/json': {'schema': schema}}}
+            return {"description": description}
+        return {
+            "description": description,
+            "content": {"application/json": {"schema": schema}},
+        }
 
     def _generate_request_body(self, schema):
-        return {'content': {'application/json': {
-            'schema': self.ma_spec.converter.schema2jsonschema(schema)
-        }}}
+        return {
+            "content": {
+                "application/json": {
+                    "schema": self.ma_spec.converter.schema2jsonschema(schema)
+                }
+            }
+        }
 
     def _resolve_forms(self, meta):
         query_schema = utils.merge_schemas(
-            utils.form2schema(getattr(meta, 'query_form', None)),
-            utils.form2schema(getattr(getattr(meta, 'paginator', None),
-                                      'form', None)))
+            utils.form2schema(getattr(meta, "query_form", None)),
+            utils.form2schema(getattr(getattr(meta, "paginator", None), "form", None)),
+        )
         body_schema = utils.merge_schemas(
-            utils.form2schema(getattr(meta, 'body_form', None)),
-            utils.form2schema(getattr(meta, 'model_form', None)))
+            utils.form2schema(getattr(meta, "body_form", None)),
+            utils.form2schema(getattr(meta, "model_form", None)),
+        )
 
         parameters = {}
         if query_schema is not None:
-            parameters.update({'query': self.ma_spec.converter
-                              .schema2parameters(query_schema,
-                                                 location='query')})
-        if body_schema is not None:
             parameters.update(
-                {'requestBody': self._generate_request_body(body_schema)})
+                {
+                    "query": self.ma_spec.converter.schema2parameters(
+                        query_schema, location="query"
+                    )
+                }
+            )
+        if body_schema is not None:
+            parameters.update({"requestBody": self._generate_request_body(body_schema)})
         return parameters
 
     def _generate_operations(self, meta):
@@ -110,16 +118,13 @@ class Swagger:
         for tag in meta.tags:
             self.tags.add(tag)
 
-        operation = {
-            'responses': responses,
-            'tags': meta.tags
-        }
+        operation = {"responses": responses, "tags": meta.tags}
 
-        if parameters.get('query', False):
-            operation.update({'parameters': parameters['query']})
+        if parameters.get("query", False):
+            operation.update({"parameters": parameters["query"]})
 
-        if parameters.get('requestBody', False):
-            operation.update({'requestBody': parameters['requestBody']})
+        if parameters.get("requestBody", False):
+            operation.update({"requestBody": parameters["requestBody"]})
 
         if getattr(meta, "description"):
             operation.update({"description": meta.description})
@@ -142,7 +147,7 @@ class Swagger:
 
     def _generate_tags(self):
         for tag in self.tags:
-            self._spec.tag({'name': tag, 'description': tag})
+            self._spec.tag({"name": tag, "description": tag})
 
     def generate(self):
         self._get_views()

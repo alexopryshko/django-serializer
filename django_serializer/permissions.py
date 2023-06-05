@@ -3,13 +3,13 @@ from django_serializer.exceptions import ServerError
 
 class PermissionsModelMixin:
     class Permission:
-        R = 1       # read permission
+        R = 1  # read permission
         W = 1 << 1  # write permission
         D = 1 << 2  # delete permission
 
     owner_permission = (Permission.R, Permission.W, Permission.D)
     group_permission = (Permission.R, Permission.W)
-    authorized_permission = (Permission.R, )
+    authorized_permission = (Permission.R,)
     unauthorized_permission = ()
 
     def is_owner(self, user):
@@ -21,7 +21,10 @@ class PermissionsModelMixin:
 
 class PermissionsMixin(PermissionsModelMixin):
     class DefaultPermissions(PermissionsModelMixin):
-        authorized_permission = (PermissionsModelMixin.Permission.R, PermissionsModelMixin.Permission.W)
+        authorized_permission = (
+            PermissionsModelMixin.Permission.R,
+            PermissionsModelMixin.Permission.W,
+        )
 
     owner_permission = ()
     group_permission = ()
@@ -38,7 +41,7 @@ class PermissionsMixin(PermissionsModelMixin):
 
         if any(conditions):
             obj = self
-        elif hasattr(self, 'get_object'):
+        elif hasattr(self, "get_object"):
             obj = self.get_object()
         else:
             obj = self.DefaultPermissions()
@@ -46,8 +49,8 @@ class PermissionsMixin(PermissionsModelMixin):
         return obj
 
     def get_permissions(self, user):
-        if hasattr(self, '_permissions'):
-            return getattr(self, '_permissions')
+        if hasattr(self, "_permissions"):
+            return getattr(self, "_permissions")
 
         obj = self.get_permissions_object()
 
@@ -60,7 +63,7 @@ class PermissionsMixin(PermissionsModelMixin):
         else:
             permissions = obj.unauthorized_permission
 
-        setattr(self, '_permissions', permissions)
+        setattr(self, "_permissions", permissions)
 
         return permissions
 

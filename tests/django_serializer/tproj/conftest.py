@@ -20,4 +20,4 @@ def some_model_3(db, freeze_t):
 
 @pytest.fixture
 def some_model_without_perm(db, freeze_t):
-    return SomeModel.objects.create(i=1, f=1, nullable='without_permissions')
+    return SomeModel.objects.create(i=1, f=1, nullable="without_permissions")

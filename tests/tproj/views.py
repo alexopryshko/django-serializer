@@ -7,7 +7,7 @@ from marshmallow import fields
 
 class GetView(ApiView):
     class Meta:
-        tags = ['general']
+        tags = ["general"]
         method = HttpMethod.GET
 
     def execute(self, request, *args, **kwargs):
@@ -19,7 +19,7 @@ class GetQueryView(ApiView):
         class QueryForm(forms.Form):
             q = forms.CharField()
 
-        tags = ['general']
+        tags = ["general"]
         method = HttpMethod.GET
         query_form = QueryForm
 
@@ -29,7 +29,7 @@ class GetQueryView(ApiView):
 
 class PostView(ApiView):
     class Meta:
-        tags = ['general']
+        tags = ["general"]
         method = HttpMethod.POST
 
     def execute(self, request, *args, **kwargs):
@@ -41,7 +41,7 @@ class PostBodyView(ApiView):
         class BodyForm(forms.Form):
             q = forms.CharField()
 
-        tags = ['general']
+        tags = ["general"]
         method = HttpMethod.POST
         body_form = BodyForm
 
@@ -51,11 +51,11 @@ class PostBodyView(ApiView):
 
 class InternalServerErrorView(ApiView):
     class Meta:
-        tags = ['general']
+        tags = ["general"]
         method = HttpMethod.GET
 
     def execute(self, request, *args, **kwargs):
-        1/0
+        1 / 0
 
 
 class TestSerializer(Serializer):
@@ -64,26 +64,20 @@ class TestSerializer(Serializer):
 
 class SerializerView(ApiView):
     class Meta:
-        tags = ['general']
+        tags = ["general"]
         method = HttpMethod.GET
         serializer = TestSerializer
 
     def execute(self, request, *args, **kwargs):
-        return {
-            'a': '1',
-            'b': 1
-        }
+        return {"a": "1", "b": 1}
 
 
 class SerializerManyView(ApiView):
     class Meta:
-        tags = ['general']
+        tags = ["general"]
         method = HttpMethod.GET
         serializer = TestSerializer
         serializer_many = True
 
     def execute(self, request, *args, **kwargs):
-        return [{
-            'a': '1',
-            'b': 1
-        }]
+        return [{"a": "1", "b": 1}]

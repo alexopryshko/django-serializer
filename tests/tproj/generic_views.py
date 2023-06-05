@@ -9,7 +9,10 @@ from django_serializer.v2.views import (
     DeleteApiView,
     ListApiView,
 )
-from django_serializer.v2.views.paginator import AscFromIdPaginator, LimitOffsetPaginator
+from django_serializer.v2.views.paginator import (
+    AscFromIdPaginator,
+    LimitOffsetPaginator,
+)
 from tests.tproj.app.models import SomeModel
 from marshmallow import fields
 
@@ -17,7 +20,7 @@ from marshmallow import fields
 class SomeModelForm(forms.ModelForm):
     class Meta:
         model = SomeModel
-        fields = '__all__'
+        fields = "__all__"
 
 
 class SomeModelSerializer(ModelSerializer):
@@ -27,48 +30,51 @@ class SomeModelSerializer(ModelSerializer):
 
 class SomeModelCreateView(CreateApiView):
     class Meta:
-        tags = ['create']
+        tags = ["create"]
         model_form = SomeModelForm
         serializer = SomeModelSerializer
 
 
 class SomeModelGetView(GetApiView):
     class Meta:
-        tags = ['get']
+        tags = ["get"]
         model = SomeModel
-        errors = [BadRequestError, NotFoundError, ]
+        errors = [
+            BadRequestError,
+            NotFoundError,
+        ]
         serializer = SomeModelSerializer
 
     def has_permissions(self, obj: SomeModel) -> bool:
         # some condition to check permission for operation
-        return obj.nullable != 'without_permissions'
+        return obj.nullable != "without_permissions"
 
 
 class SomeModelUpdateView(UpdateApiView):
     class Meta:
-        tags = ['update']
+        tags = ["update"]
         model = SomeModel
         model_form = SomeModelForm
         serializer = SomeModelSerializer
 
     def has_permissions(self, obj: SomeModel) -> bool:
         # some condition to check permission for operation
-        return obj.nullable != 'without_permissions'
+        return obj.nullable != "without_permissions"
 
 
 class SomeModelDeleteView(DeleteApiView):
     class Meta:
-        tags = ['update']
+        tags = ["update"]
         model = SomeModel
 
     def has_permissions(self, obj: SomeModel) -> bool:
         # some condition to check permission for operation
-        return obj.nullable != 'without_permissions'
+        return obj.nullable != "without_permissions"
 
 
 class SimpleListApiView(ListApiView):
     class Meta:
-        tags = ['list']
+        tags = ["list"]
         model = SomeModel
         serializer = SomeModelSerializer
 
@@ -80,22 +86,19 @@ class ListSomeModelSerializer(Serializer):
 
 class PaginateListApiView(ListApiView):
     class Meta:
-        tags = ['list']
+        tags = ["list"]
         model = SomeModel
         serializer = ListSomeModelSerializer
         serializer_many = False
         paginator = AscFromIdPaginator
 
     def build_response(self, qs, qs_after_paginator=None):
-        return {
-            'count': qs.count(),
-            'list': qs_after_paginator
-        }
+        return {"count": qs.count(), "list": qs_after_paginator}
 
 
 class LimitOffsetPaginateListApiView(ListApiView):
     class Meta:
-        tags = ['list']
+        tags = ["list"]
         model = SomeModel
         serializer = SomeModelSerializer
         paginator = LimitOffsetPaginator

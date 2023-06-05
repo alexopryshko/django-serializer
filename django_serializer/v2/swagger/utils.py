@@ -3,8 +3,7 @@ from django.conf import settings
 from django.forms import ModelForm
 from marshmallow import Schema, fields
 
-from django_serializer.v2.exceptions import HttpError, \
-    IncorrectSettingsException
+from django_serializer.v2.exceptions import HttpError, IncorrectSettingsException
 
 
 class IntList(fields.List):
@@ -35,13 +34,11 @@ FORM_FIELD_MAPPING = {
     forms.TypedChoiceField: fields.Str,
 }
 
-extra_fields = getattr(
-    settings, 'SERIALIZER_FORM_FIELD_MAPPING', None
-)
+extra_fields = getattr(settings, "SERIALIZER_FORM_FIELD_MAPPING", None)
 if extra_fields:
     if not isinstance(extra_fields, dict):
         raise IncorrectSettingsException(
-            '`SERIALIZER_FORM_FIELD_MAPPING` has incorrect type'
+            "`SERIALIZER_FORM_FIELD_MAPPING` has incorrect type"
         )
     FORM_FIELD_MAPPING.update(extra_fields)
 
@@ -58,24 +55,26 @@ def form2schema(field: forms.Form) -> Schema:
     schema_fields = {}
     for name, field in form_fields.items():
         schema_fields.update(
-            {name: FORM_FIELD_MAPPING[type(field)](required=field.required)})
+            {name: FORM_FIELD_MAPPING[type(field)](required=field.required)}
+        )
     schema = Schema.from_dict(schema_fields)
     return schema
 
 
 def generate_error_schema(swagger, error: HttpError) -> Schema:
-    key = ''.join([str(error.http_code), error.alias])
+    key = "".join([str(error.http_code), error.alias])
     if swagger.error_classes.get(key) is not None:
         return swagger.error_classes[key]
-    schema_fields = dict(status=fields.String(example=error.alias),
-                         message=fields.String(example=error.description),
-                         data=fields.Dict())
-    if getattr(error, 'field_problems', None) is not None:
-        schema_fields.update({'fields_problems': fields.Dict()})
+    schema_fields = dict(
+        status=fields.String(example=error.alias),
+        message=fields.String(example=error.description),
+        data=fields.Dict(),
+    )
+    if getattr(error, "field_problems", None) is not None:
+        schema_fields.update({"fields_problems": fields.Dict()})
 
     schema = Schema.from_dict(
-        schema_fields,
-        name=''.join([i.capitalize() for i in error.description.split()])
+        schema_fields, name="".join([i.capitalize() for i in error.description.split()])
     )
     swagger.error_classes[key] = schema
     return schema

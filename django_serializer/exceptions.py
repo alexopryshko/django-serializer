@@ -34,29 +34,45 @@ class ServerResponseStatus(object):
 
 
 class BaseViewException(Exception):
-    BAD_REQUEST = ServerResponseStatus('bad_request', 'Bad request', 400)
-    INVALID_PARAMETER = ServerResponseStatus('invalid_param', 'Invalid parameter', 400)
-    AUTH_NOT_REQUIRED = ServerResponseStatus('auth_not_required', 'Authentication not required', 400)
+    BAD_REQUEST = ServerResponseStatus("bad_request", "Bad request", 400)
+    INVALID_PARAMETER = ServerResponseStatus("invalid_param", "Invalid parameter", 400)
+    AUTH_NOT_REQUIRED = ServerResponseStatus(
+        "auth_not_required", "Authentication not required", 400
+    )
 
-    AUTH_REQUIRED = ServerResponseStatus('auth_required', 'Authentication required', 401)
-    ACCESS_DENIED = ServerResponseStatus('access_denied', 'Access denied', 401)
+    AUTH_REQUIRED = ServerResponseStatus(
+        "auth_required", "Authentication required", 401
+    )
+    ACCESS_DENIED = ServerResponseStatus("access_denied", "Access denied", 401)
 
-    FORBIDDEN = ServerResponseStatus('forbidden', 'Forbidden', 403)
-    INVALID_CREDENTIALS = ServerResponseStatus('invalid_credentials', 'Invalid credentials', 403)
-    ROLE_FORBIDDEN = ServerResponseStatus('role_forbidden', 'For your role access denied', 403)
-    ACCOUNT_INACTIVE = ServerResponseStatus('account_not_active', 'Account is not active', 403)
+    FORBIDDEN = ServerResponseStatus("forbidden", "Forbidden", 403)
+    INVALID_CREDENTIALS = ServerResponseStatus(
+        "invalid_credentials", "Invalid credentials", 403
+    )
+    ROLE_FORBIDDEN = ServerResponseStatus(
+        "role_forbidden", "For your role access denied", 403
+    )
+    ACCOUNT_INACTIVE = ServerResponseStatus(
+        "account_not_active", "Account is not active", 403
+    )
 
-    NOT_FOUND = ServerResponseStatus('not_found', 'Not found', 404)
+    NOT_FOUND = ServerResponseStatus("not_found", "Not found", 404)
 
-    NOT_IMPLEMENTED = ServerResponseStatus('not_implemented', 'Not implemented', 405)
+    NOT_IMPLEMENTED = ServerResponseStatus("not_implemented", "Not implemented", 405)
 
-    TOO_MANY_REQUESTS = ServerResponseStatus('too_many_requests', 'Too many requests', 429)
+    TOO_MANY_REQUESTS = ServerResponseStatus(
+        "too_many_requests", "Too many requests", 429
+    )
 
-    MIX_FIELDS_FILTER = ServerResponseStatus('mix_fields_filter', 'Cannot have a mix of inclusion and exclusion', 500)
-    STORAGE_ERROR = ServerResponseStatus('storage_error', 'Storage error', 500)
-    INTERNAL_SERVER_ERROR = ServerResponseStatus('internal_error', 'Internal server error', 500)
-    UNKNOWN = ServerResponseStatus('unknown_error', 'Unknown error', 500)
-    FILE_SAVE_ERROR = ServerResponseStatus('file_save_error', "Can't save data", 500)
+    MIX_FIELDS_FILTER = ServerResponseStatus(
+        "mix_fields_filter", "Cannot have a mix of inclusion and exclusion", 500
+    )
+    STORAGE_ERROR = ServerResponseStatus("storage_error", "Storage error", 500)
+    INTERNAL_SERVER_ERROR = ServerResponseStatus(
+        "internal_error", "Internal server error", 500
+    )
+    UNKNOWN = ServerResponseStatus("unknown_error", "Unknown error", 500)
+    FILE_SAVE_ERROR = ServerResponseStatus("file_save_error", "Can't save data", 500)
 
     def __init__(self, status, description=None, field_problems=None):
         if not isinstance(status, ServerResponseStatus):
