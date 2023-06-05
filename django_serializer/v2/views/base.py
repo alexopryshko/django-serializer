@@ -97,7 +97,7 @@ class ApiView(View, metaclass=ApiViewMeta, checkmeta=False):
             payload = self.get_request_json(request)
             self._request_body = self._form_pipeline(body_form, payload)
 
-    def _check_method(self, request: HttpRequest):
+    def _check_request_method(self, request: HttpRequest):
         """
         Check request method is allowed
         :param request: HttpRequest
@@ -116,7 +116,7 @@ class ApiView(View, metaclass=ApiViewMeta, checkmeta=False):
         pass
 
     def perform_request_pipelines(self, request: HttpRequest):
-        self._check_method(request)
+        self._check_request_method(request)
         self._check_section_permission(request)
         self._query_form(request)
         self._body_form(request)
