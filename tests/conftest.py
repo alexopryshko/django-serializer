@@ -9,9 +9,9 @@ from pytz import UTC
 
 def wrapper(func):
     def _inner(*args, **kwargs):
-        kwargs['content_type'] = 'application/json'
-        if 'json' in kwargs:
-            kwargs['data'] = json.dumps(kwargs['json'])
+        kwargs["content_type"] = "application/json"
+        if "json" in kwargs:
+            kwargs["data"] = json.dumps(kwargs["json"])
         return func(*args, **kwargs)
 
     return _inner
@@ -24,7 +24,9 @@ class JSONClient:
     def __getattr__(self, item):
         func = getattr(self.client, item)
 
-        if func not in [self.client.force_login, ]:
+        if func not in [
+            self.client.force_login,
+        ]:
             return wrapper(func)
         else:
             return func

@@ -22,7 +22,7 @@ class ObjectMixin:
 
     def get_object(self):
         try:
-            return self.model.objects.get(pk=self.request_args['id'])
+            return self.model.objects.get(pk=self.request_args["id"])
         except self.model.DoesNotExist:
             raise ServerError(ServerError.NOT_FOUND)
         except (ValueError, KeyError):
@@ -30,7 +30,7 @@ class ObjectMixin:
 
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs()
-        kwargs['instance'] = self.get_object()
+        kwargs["instance"] = self.get_object()
         return kwargs
 
 
@@ -41,9 +41,7 @@ class SerializerMixin:
         return self.serializer
 
     def get_serializer_kwargs(self, obj, **kwargs):
-        serializer_kwargs = {
-            'obj': obj
-        }
+        serializer_kwargs = {"obj": obj}
         serializer_kwargs.update(kwargs)
         return serializer_kwargs
 
@@ -63,14 +61,16 @@ class FormMixin:
 
     def get_form_kwargs(self):
         kwargs = {
-            'data': self.request.GET,
+            "data": self.request.GET,
         }
 
-        if self.request.method in ('POST', 'PUT'):
-            kwargs.update({
-                'data': self.request_body,
-                'files': self.request.FILES,
-            })
+        if self.request.method in ("POST", "PUT"):
+            kwargs.update(
+                {
+                    "data": self.request_body,
+                    "files": self.request.FILES,
+                }
+            )
         return kwargs
 
     def get_form_class(self):
@@ -92,30 +92,28 @@ class ListMixin:
         return self.paginator
 
     def get_paginator_kwargs(self):
-        return {
-            'object_list': self.get_queryset(),
-            'arguments': self.request.GET
-        }
+        return {"object_list": self.get_queryset(), "arguments": self.request.GET}
 
     def get_paginator(self):
-        if hasattr(self, '_paginator'):
-            return getattr(self, '_paginator')
+        if hasattr(self, "_paginator"):
+            return getattr(self, "_paginator")
         if self.paginator:
-            setattr(self, '_paginator', self.get_paginator_class()(**self.get_paginator_kwargs()))
-            return getattr(self, '_paginator')
+            setattr(
+                self,
+                "_paginator",
+                self.get_paginator_class()(**self.get_paginator_kwargs()),
+            )
+            return getattr(self, "_paginator")
 
     def get_queryset(self):
-        return self.model.objects.all().order_by('id')
+        return self.model.objects.all().order_by("id")
 
     def get_serializer_kwargs(self, obj, **kwargs):
-        return super().get_serializer_kwargs(obj, **{'multiple': True})
+        return super().get_serializer_kwargs(obj, **{"multiple": True})
 
     def response_middleware(self, response):
         response = super().response_middleware(response)
         paginator = self.get_paginator()
         if paginator:
-            response = {
-                'count': self.get_paginator().count,
-                'list': response
-            }
+            response = {"count": self.get_paginator().count, "list": response}
         return response

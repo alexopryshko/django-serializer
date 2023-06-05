@@ -8,9 +8,9 @@ from django_serializer.v2.swagger import views
 
 
 class DjangoSerializer(AppConfig):
-    name = 'django_serializer'
+    name = "django_serializer"
 
     def ready(self):
         urls = importlib.import_module(settings.ROOT_URLCONF)
-        swagger_url = getattr(settings, 'SWAGGER_URL', 'swagger.json')
+        swagger_url = getattr(settings, "SWAGGER_URL", "swagger.json")
         urls.urlpatterns.append(path(swagger_url, views.index))

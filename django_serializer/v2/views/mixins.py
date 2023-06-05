@@ -2,6 +2,7 @@ from typing import Type
 
 from django.core.exceptions import ObjectDoesNotExist
 from django.db.models import Model
+from django.http import HttpRequest
 
 from django_serializer.v2.exceptions import (
     NotFoundError,
@@ -13,11 +14,13 @@ from django_serializer.v2.exceptions import (
 class FormMixin:
     def get_form_kwargs(self):
         kwargs = {}
-        if self.request.method in ('POST', 'PUT', 'PATCH'):
-            kwargs.update({
-                'data': self.get_request_json(),
-                'files': self.request.FILES,
-            })
+        if self.request.method in ("POST", "PUT", "PATCH"):
+            kwargs.update(
+                {
+                    "data": self.get_request_json(self.request),
+                    "files": self.request.FILES,
+                }
+            )
         return kwargs
 
     def get_form_class(self):
@@ -30,11 +33,11 @@ class FormMixin:
 
 class ObjectMixin:
     def _get_object(self):
-        if hasattr(self, '_object'):
-            return getattr(self, '_object')
+        if hasattr(self, "_object"):
+            return getattr(self, "_object")
         try:
             obj = self.get_object()
-            setattr(self, '_object', obj)
+            setattr(self, "_object", obj)
             return obj
         except ObjectDoesNotExist:
             raise NotFoundError
@@ -46,15 +49,20 @@ class ObjectMixin:
 
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs()
-        kwargs['instance'] = self._get_object()
+        kwargs["instance"] = self._get_object()
         return kwargs
 
 
 class LoginRequiredMixin:
-    def perform_request_pipelines(self):
-        if not self.request.user.is_authenticated:
+    """
+    Allow request only for authorized user
+    """
+
+    def _check_section_permission(self, request: HttpRequest):
+        if not request.user.is_authenticated:
             raise AuthRequiredError
-        super().perform_request_pipelines()
+
+        return super()._check_section_permission(request)
 
 
 class CheckPermissionsMixin:

@@ -8,13 +8,13 @@ class Field:
         self.name = name
 
     def serialize(self, **kwargs):
-        if 'field_value' not in kwargs:
+        if "field_value" not in kwargs:
             if not self.required:
                 serialized = self.default
             else:
-                raise SerializerFieldException('Field missed or has no default value')
+                raise SerializerFieldException("Field missed or has no default value")
         else:
-            serialized = kwargs['field_value']
+            serialized = kwargs["field_value"]
             serialized = self.serialization_handler(serialized)
 
         return serialized
@@ -41,13 +41,15 @@ class CharField(Field):
 class DateField(Field):
     def serialization_handler(self, value):
         from django.utils.dateformat import format
-        return format(value, 'U') if value is not None else None
+
+        return format(value, "U") if value is not None else None
 
 
 class DateTimeField(Field):
     def serialization_handler(self, value):
         from django.utils.dateformat import format
-        return format(value, 'U') if value is not None else None
+
+        return format(value, "U") if value is not None else None
 
 
 class TimeField(Field):
@@ -97,7 +99,7 @@ class ImageField(Field):
 
 class SerializerField(Field):
     def __init__(self, **kwargs):
-        source = kwargs.pop('source')
+        source = kwargs.pop("source")
         self.source = source
         self.serializer = None
         super().__init__(**kwargs)

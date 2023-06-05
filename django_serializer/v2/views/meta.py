@@ -7,18 +7,21 @@ from typing import Optional, List, Type, Union
 from django.forms import BaseForm
 
 from django_serializer.v2.exceptions import IncorrectMetaException, HttpError
+from django_serializer.v2.parsers import BaseParser
+from django_serializer.v2.renderers import BaseRenderer
 from django_serializer.v2.serializer import Serializer
+from django_serializer.v2.settings import settings
 
 
 class HttpMethod(enum.Enum):
-    GET = 'get'
-    POST = 'post'
-    PUT = 'put'
-    PATCH = 'patch'
-    DELETE = 'delete'
-    HEAD = 'head'
-    OPTIONS = 'options'
-    TRACE = 'trace'
+    GET = "get"
+    POST = "post"
+    PUT = "put"
+    PATCH = "patch"
+    DELETE = "delete"
+    HEAD = "head"
+    OPTIONS = "options"
+    TRACE = "trace"
 
 
 class ApiViewMeta(type):
@@ -29,19 +32,23 @@ class ApiViewMeta(type):
         description: Optional[str] = None
         query_form: Optional[Type[BaseForm]] = None
         body_form: Optional[Type[BaseForm]] = None
+        body_parser: Optional[
+            Type[BaseParser]
+        ] = settings.SERIALIZER_DEFAULT_PARSER_CLASS
         serializer: Optional[Type[Serializer]] = None
         serializer_many: bool = False
         errors: List[Type[HttpError]] = []
+        renderer: Type[BaseRenderer] = settings.SERIALIZER_DEFAULT_RENDERER_CLASS
 
-        __manual_validation__: List[str] = ['tags', 'errors']
+        __manual_validation__: List[str] = ["tags", "errors"]
 
     def __new__(mcs, name, bases, attrs, *args, **kwargs):
-        checkmeta = kwargs.pop('checkmeta', True)
+        checkmeta = kwargs.pop("checkmeta", True)
         # noinspection PyArgumentList
         cls = super().__new__(mcs, name, bases, attrs, *args, **kwargs)
 
         if checkmeta:
-            options = attrs.get('Meta')
+            options = attrs.get("Meta")
             base_options = mcs.find_base_options(bases)
             meta = mcs.merge_options(options, base_options)
             errors = []
@@ -51,14 +58,14 @@ class ApiViewMeta(type):
                 mcs.check_meta(meta, errors)
             if errors:
                 raise IncorrectMetaException(name, errors)
-            attrs['Meta'] = meta
+            attrs["Meta"] = meta
 
         return cls
 
     @staticmethod
     def find_base_options(bases):
         for b in reversed(bases):
-            options = getattr(b, 'Meta', None)
+            options = getattr(b, "Meta", None)
             if options is not None:
                 return options
 
@@ -71,7 +78,7 @@ class ApiViewMeta(type):
 
         members = inspect.getmembers(base_options)
         for name, obj in members:
-            if name.startswith('_'):
+            if name.startswith("_"):
                 continue
             setattr(options, name, copy.copy(getattr(options, name, obj)))
 
@@ -80,38 +87,36 @@ class ApiViewMeta(type):
     @staticmethod
     def get_annotation(base_cls, name):
         for cls in base_cls.__mro__:
-            if hasattr(cls, '__annotations__'):
+            if hasattr(cls, "__annotations__"):
                 annt = cls.__annotations__.get(name)
                 if annt is not None:
                     return annt
 
     @classmethod
     def check_meta_extra(mcs, meta: Type, errors: List):
-        tags = getattr(meta, 'tags', None)
+        tags = getattr(meta, "tags", None)
         if not tags:
-            errors.append('`tags` is required')
+            errors.append("`tags` is required")
         else:
             if not isinstance(tags, List):
-                errors.append('`tags` variable has incorrect type, '
-                              'should be list')
+                errors.append("`tags` variable has incorrect type, " "should be list")
             else:
-                if any([not isinstance(item, str) for item in tags]):
-                    errors.append('`tags` item has incorrect type, '
-                                  'should be str')
+                if any(not isinstance(item, str) for item in tags):
+                    errors.append("`tags` item has incorrect type, " "should be str")
 
-        meta_errors = getattr(meta, 'errors', [])
+        meta_errors = getattr(meta, "errors", [])
         if meta_errors:
             if not isinstance(meta_errors, List):
-                errors.append('`errors` variable has incorrect type, '
-                              'should be list')
+                errors.append("`errors` variable has incorrect type, " "should be list")
             else:
                 try:
-                    if any([not issubclass(item, HttpError)
-                            for item in meta_errors]):
+                    if any(not issubclass(item, HttpError) for item in meta_errors):
                         raise TypeError
                 except TypeError:
-                    errors.append('`errors` item has incorrect type, '
-                                  'should be subtype of HttpError')
+                    errors.append(
+                        "`errors` item has incorrect type, "
+                        "should be subtype of HttpError"
+                    )
 
         return errors
 
@@ -121,7 +126,7 @@ class ApiViewMeta(type):
 
         manual_validation = mcs.Meta.__manual_validation__
         for field_name in dir(mcs.Meta):
-            if field_name.startswith('_') or field_name in manual_validation:
+            if field_name.startswith("_") or field_name in manual_validation:
                 continue
 
             field = getattr(meta, field_name, None)
@@ -134,13 +139,12 @@ class ApiViewMeta(type):
             else:
                 required = True
                 _type = annt
-            is_type = isinstance(_type, _GenericAlias) and \
-                      _type.__origin__ == type
+            is_type = isinstance(_type, _GenericAlias) and _type.__origin__ == type
             if is_type:
                 _type = _type.__args__[0]
 
             if required and field is None:
-                errors.append(f'`{field_name}` is required')
+                errors.append(f"`{field_name}` is required")
                 continue
             if field:
                 if is_type:
@@ -149,10 +153,13 @@ class ApiViewMeta(type):
                     except TypeError:
                         is_correct_type = False
                     if not is_correct_type:
-                        errors.append(f'`{field_name}` has incorrect type, '
-                                      f'should be subclass of `{_type}`')
+                        errors.append(
+                            f"`{field_name}` has incorrect type, "
+                            f"should be subclass of `{_type}`"
+                        )
                 elif not isinstance(field, _type):
-                    errors.append(f'`{field_name}` has incorrect type, '
-                                  f'should be `{_type}`')
+                    errors.append(
+                        f"`{field_name}` has incorrect type, " f"should be `{_type}`"
+                    )
 
         return errors

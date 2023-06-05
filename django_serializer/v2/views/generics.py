@@ -15,8 +15,11 @@ from django_serializer.v2.views.mixins import (
 from django_serializer.v2.views.paginator import BasePaginator
 
 __all__ = (
-    'CreateApiView', 'GetApiView', 'UpdateApiView', 'DeleteApiView',
-    'ListApiView',
+    "CreateApiView",
+    "GetApiView",
+    "UpdateApiView",
+    "DeleteApiView",
+    "ListApiView",
 )
 
 
@@ -27,8 +30,13 @@ class CreateApiViewMeta(ApiViewMeta):
         serializer: Type[Serializer] = None
 
 
-class CreateApiView(CheckPermissionsMixin, FormMixin, ApiView,
-                    metaclass=CreateApiViewMeta, checkmeta=False):
+class CreateApiView(
+    CheckPermissionsMixin,
+    FormMixin,
+    ApiView,
+    metaclass=CreateApiViewMeta,
+    checkmeta=False,
+):
     Meta = CreateApiViewMeta.Meta
 
     def has_permissions(self) -> bool:
@@ -53,12 +61,17 @@ class GetApiViewMeta(ApiViewMeta):
         method: HttpMethod = HttpMethod.GET
         model: Type[Model] = None
         query_form: Type[forms.Form] = GetApiForm
-        object_key: str = 'id'
+        object_key: str = "id"
         serializer: Type[Serializer] = None
 
 
-class GetApiView(CheckPermissionsMixin, ObjectMixin, ApiView,
-                 metaclass=GetApiViewMeta, checkmeta=False):
+class GetApiView(
+    CheckPermissionsMixin,
+    ObjectMixin,
+    ApiView,
+    metaclass=GetApiViewMeta,
+    checkmeta=False,
+):
     Meta = GetApiViewMeta.Meta
 
     def get_object(self):
@@ -81,12 +94,13 @@ class UpdateApiViewMeta(ApiViewMeta):
         body_form: Type[forms.BaseForm] = GetApiForm
         model: Type[Model] = None
         model_form: Type[forms.ModelForm] = None
-        object_key: str = 'id'
+        object_key: str = "id"
         serializer: Type[Serializer] = None
 
 
-class UpdateApiView(ObjectMixin, FormMixin, ApiView,
-                    metaclass=UpdateApiViewMeta, checkmeta=False):
+class UpdateApiView(
+    ObjectMixin, FormMixin, ApiView, metaclass=UpdateApiViewMeta, checkmeta=False
+):
     Meta = UpdateApiViewMeta.Meta
 
     def has_permissions(self, obj: Model) -> bool:
@@ -109,11 +123,16 @@ class DeleteApiViewMeta(ApiViewMeta):
         method: HttpMethod = HttpMethod.POST
         body_form: Type[forms.BaseForm] = GetApiForm
         model: Type[Model] = None
-        object_key: str = 'id'
+        object_key: str = "id"
 
 
-class DeleteApiView(CheckPermissionsMixin, ObjectMixin, ApiView,
-                    metaclass=DeleteApiViewMeta, checkmeta=False):
+class DeleteApiView(
+    CheckPermissionsMixin,
+    ObjectMixin,
+    ApiView,
+    metaclass=DeleteApiViewMeta,
+    checkmeta=False,
+):
     Meta = DeleteApiViewMeta.Meta
 
     def has_permissions(self, obj: Model) -> bool:
@@ -133,11 +152,12 @@ class ListApiViewMeta(ApiViewMeta):
         serializer: Type[Serializer] = None
         serializer_many: bool = True
         paginator: Optional[Type[BasePaginator]] = None
-        ordering: tuple = ('id',)
+        ordering: tuple = ("id",)
 
 
-class ListApiView(CheckPermissionsMixin, ApiView,
-                  metaclass=ListApiViewMeta, checkmeta=False):
+class ListApiView(
+    CheckPermissionsMixin, ApiView, metaclass=ListApiViewMeta, checkmeta=False
+):
     Meta = ListApiViewMeta.Meta
 
     def has_permissions(self) -> bool:
@@ -167,7 +187,4 @@ class ListApiView(CheckPermissionsMixin, ApiView,
         if paginator:
             paginator.validate_form()
             qs_after_paginator = paginator.paginate(qs)
-        return self.build_response(
-            qs=qs,
-            qs_after_paginator=qs_after_paginator
-        )
+        return self.build_response(qs=qs, qs_after_paginator=qs_after_paginator)

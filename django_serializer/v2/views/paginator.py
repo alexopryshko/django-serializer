@@ -7,7 +7,7 @@ from django.db.models import QuerySet
 
 from django_serializer.v2.views import ApiView
 
-deprecated_names = [('Paginator', 'BasePaginator')]
+deprecated_names = [("Paginator", "BasePaginator")]
 
 
 class BasePaginator:
@@ -22,8 +22,8 @@ class BasePaginator:
         if self._queryset is None:
             warn(
                 (
-                    '`qs` argument will become mandatory in the future. '
-                    '`total_count` method may not work properly without `_queryset`'
+                    "`qs` argument will become mandatory in the future. "
+                    "`total_count` method may not work properly without `_queryset`"
                 ),
                 FutureWarning,
                 stacklevel=2,
@@ -62,10 +62,10 @@ class FromIdPaginator(BasePaginator):
     form = FromIdForm
 
     def _get_limit(self) -> int:
-        return self.data['limit'] or self.default_limit
+        return self.data["limit"] or self.default_limit
 
     def paginate(self, qs: Optional[QuerySet] = None) -> QuerySet:
-        from_id = self.data['from_id']
+        from_id = self.data["from_id"]
         limit = self._get_limit()
         queryset = self._get_queryset(qs)
         if from_id:
@@ -74,11 +74,11 @@ class FromIdPaginator(BasePaginator):
 
 
 class AscFromIdPaginator(FromIdPaginator):
-    condition_kwarg = 'id__gt'
+    condition_kwarg = "id__gt"
 
 
 class DescFromIdPaginator(FromIdPaginator):
-    condition_kwarg = 'id__lt'
+    condition_kwarg = "id__lt"
 
 
 class LimitOffsetPaginator(BasePaginator):
@@ -120,20 +120,20 @@ class LimitOffsetPaginator(BasePaginator):
             return 1
 
     def _get_limit(self) -> int:
-        if self.data['all']:
+        if self.data["all"]:
             return self.total_count
-        return self.data['limit'] or self.default_limit
+        return self.data["limit"] or self.default_limit
 
     def _get_offset(self) -> int:
-        if self.data['all']:
+        if self.data["all"]:
             return 0
-        return self.data['offset'] or self.default_offset
+        return self.data["offset"] or self.default_offset
 
     def paginate(
         self, qs: Optional[Union[Collection, QuerySet]] = None
     ) -> Union[Collection, QuerySet]:
         queryset = self._get_queryset(qs)
-        if self.data['all']:
+        if self.data["all"]:
             return queryset
         limit = self._get_limit()
         offset = self._get_offset()
@@ -149,4 +149,4 @@ def __getattr__(name):
                 stacklevel=2,
             )
             return globals()[new_name]
-    raise AttributeError(f'module {__name__} has no attribute {name}')
+    raise AttributeError(f"module {__name__} has no attribute {name}")
