@@ -1,11 +1,16 @@
 # 1.2.0
+- drop support for django2
+- add django4.2 to test matrix
+
 - `django_serializer.base_views.BaseView` deprecated. It will be removed in version 2.0
 - `django_serializer.serializer.base.Serializer` deprecated. It will be removed in version 2.0
+
 
 - add `django_serializer.v2.renderers.BaseRenderer` see docstrings
 - add `django_serializer.v2.renderers.JsonRenderer` see docstrings
 - add `SERIALIZER_DEFAULT_PARSER_CLASS` to django settings
 - add `ApiViewMeta.body_parser`
+
 
 - add `django_serializer.v2.parsers.BaseParser` see docstrings
 - add `django_serializer.v2.parsers.JsonParser` see docstrings
@@ -13,8 +18,10 @@
 - add `SERIALIZER_DEFAULT_RENDERER_CLASS` to django settings
 - add `ApiViewMeta.renderer`
 
+
 - add `ApiView.get_parser` method
 - `ApiView.get_request_json` now uses `ApiView.get_parser` for parsing request.body
+
 
 - `ApiView._query_form` now has positional request argument
 - `ApiView.__body_form` now has positional request argument
@@ -25,18 +32,22 @@
 - add `_check_request_method` and `_check_section_permission` to `ApiView.perform_request_pipelines`
 - `ApiView._json_response` renamed to `ApiView.render_response`. `ApiView.render_response` uses renderer logic
 
+
 - `ApiView._handle_http_error` renamed to `ApiView.handle_http_error`
 - `ApiView.handle_http_error` now has positional request argument
 - `ApiView.handle_http_error` uses `ApiView.render_response`
 
+
 - `SERIALIZER_FIELD_MAPPING` no longer importable from `django_serializer/v2/serializer/__init__.py`
 - `FileField` moved from `django_serializer/v2/serializer/__init__.py` to `django_serializer/v2/serializer_fields.py`
+
 
 ## internal changes
 - add `django_serializer.v2.settings.ApiSettings` 
 - add multiple docstrings
 - reformated code with black
 - fix typings
+- drop django2 from test matrix
 
 # 1.1.0
 - minimum supported django>=2.2
