@@ -26,6 +26,7 @@ class JsonParser(BaseParser):
     """
     Parses using standard json library.
     """
+
     def parse(self, data: bytes):
         try:
             return json.loads(data)
