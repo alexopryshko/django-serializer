@@ -7,6 +7,6 @@ def index(request):
     swagger = Swagger()
     swagger.generate()
     response = JsonResponse(swagger.spec)
-    response['Access-Control-Allow-Origin'] = "*"
-    response['Access-Control-Allow-Methods'] = "GET, OPTIONS"
+    response["Access-Control-Allow-Origin"] = "*"
+    response["Access-Control-Allow-Methods"] = "GET, OPTIONS"
     return response

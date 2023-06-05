@@ -2,13 +2,16 @@ from django.db import models
 from django.core.exceptions import ValidationError
 from django.db.models.base import ModelBase
 
-from django_serializer.exceptions import MissEntityTypeException, DuplicateEntityTypeException
+from django_serializer.exceptions import (
+    MissEntityTypeException,
+    DuplicateEntityTypeException,
+)
 
 
 ENTITY_TYPE_LENGTH = 16
 ENTITY_ID_LENGTH = 64 - ENTITY_TYPE_LENGTH
-_ENTITY_TYPE_MAX_VALUE = int('1' * ENTITY_TYPE_LENGTH, 2)
-_ENTITY_ID_MAX_VALUE = int('1' * ENTITY_ID_LENGTH, 2)
+_ENTITY_TYPE_MAX_VALUE = int("1" * ENTITY_TYPE_LENGTH, 2)
+_ENTITY_ID_MAX_VALUE = int("1" * ENTITY_ID_LENGTH, 2)
 _ENTITY_TYPE_MASK = _ENTITY_TYPE_MAX_VALUE << ENTITY_ID_LENGTH
 _ENTITY_ID_MASK = ~_ENTITY_TYPE_MASK
 
@@ -17,20 +20,24 @@ class EntityMixinMeta(ModelBase):
     entity_types = {}
 
     def __new__(mcs, name, bases, attrs):
-        if 'EntityMixin' == name or 'ENTITY_TYPE' not in attrs:
+        if "EntityMixin" == name or "ENTITY_TYPE" not in attrs:
             new = super(EntityMixinMeta, mcs).__new__(mcs, name, bases, attrs)
             return new
 
-        entity_type = attrs['ENTITY_TYPE']
+        entity_type = attrs["ENTITY_TYPE"]
         if entity_type is None:
-            raise MissEntityTypeException('You have missed entity_type in {}'.format(name))
+            raise MissEntityTypeException(
+                "You have missed entity_type in {}".format(name)
+            )
 
         if entity_type in mcs.entity_types:
             raise DuplicateEntityTypeException(
-                'Model({}) with the same entity type already exist'.format(mcs.entity_types[entity_type].__name__)
+                "Model({}) with the same entity type already exist".format(
+                    mcs.entity_types[entity_type].__name__
+                )
             )
 
-        attrs['entity_types'] = mcs.entity_types
+        attrs["entity_types"] = mcs.entity_types
 
         new = super(EntityMixinMeta, mcs).__new__(mcs, name, bases, attrs)
         mcs.entity_types[entity_type] = new
@@ -63,14 +70,13 @@ class EntityField(models.BigIntegerField):
     @staticmethod
     def validate_object_id(value):
         if not check_object_id(value):
-            raise ValidationError('%(value)s is not valid object id', params={'value': value})
+            raise ValidationError(
+                "%(value)s is not valid object id", params={"value": value}
+            )
 
     def __init__(self, *args, **kwargs):
-        self.available_entities = kwargs.pop('available_entities', [])
-        kwargs.update({
-            'db_index': True,
-            'validators': [self.validate_object_id]
-        })
+        self.available_entities = kwargs.pop("available_entities", [])
+        kwargs.update({"db_index": True, "validators": [self.validate_object_id]})
         super().__init__(*args, **kwargs)
 
 

@@ -4,9 +4,7 @@ import json
 
 
 class ObjectField(forms.Field):
-    default_error_messages = {
-        'invalid_type': 'Object is incorrect'
-    }
+    default_error_messages = {"invalid_type": "Object is incorrect"}
 
     @staticmethod
     def get_field_problems(form):
@@ -14,7 +12,7 @@ class ObjectField(forms.Field):
         for field, error in form.errors.items():
             for data_item in error.data:
                 for message in data_item.messages:
-                    field_problems.append('{}: {}'.format(field, message))
+                    field_problems.append("{}: {}".format(field, message))
         return field_problems
 
     def form_validator(self, value):
@@ -22,17 +20,21 @@ class ObjectField(forms.Field):
             for item in value:
                 form = self.form_class(data=item)
                 if not form.is_valid():
-                    raise ValidationError(self.get_field_problems(form), code='invalid_form')
+                    raise ValidationError(
+                        self.get_field_problems(form), code="invalid_form"
+                    )
                 else:
                     self._validate_forms.append(form)
         else:
             form = self.form_class(data=value)
             if not form.is_valid():
-                raise ValidationError(self.get_field_problems(form), code='invalid_form')
+                raise ValidationError(
+                    self.get_field_problems(form), code="invalid_form"
+                )
             self._validate_forms.append(form)
 
     def __init__(self, form_class, multiple=False, *args, **kwargs):
-        validators = kwargs.pop('validators', [])
+        validators = kwargs.pop("validators", [])
         if isinstance(validators, tuple):
             validators += (self.form_validator,)
         else:
@@ -60,12 +62,18 @@ class ObjectField(forms.Field):
 
         if self.multiple:
             if not isinstance(value, list):
-                raise ValidationError(self.error_messages['invalid_type'], code='invalid_type')
+                raise ValidationError(
+                    self.error_messages["invalid_type"], code="invalid_type"
+                )
             if any([not isinstance(item, dict) for item in value]):
-                raise ValidationError(self.error_messages['invalid_type'], code='invalid_type')
+                raise ValidationError(
+                    self.error_messages["invalid_type"], code="invalid_type"
+                )
         else:
             if not isinstance(value, dict):
-                raise ValidationError(self.error_messages['invalid_type'], code='invalid_type')
+                raise ValidationError(
+                    self.error_messages["invalid_type"], code="invalid_type"
+                )
 
     def clean(self, value):
         super().clean(value)

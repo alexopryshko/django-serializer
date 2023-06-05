@@ -19,7 +19,7 @@ class Paginator(object):
         return self.form
 
     def get_form_kwargs(self):
-        return {'data': self._arguments}
+        return {"data": self._arguments}
 
     def validate_arguments(self):
         form = self.get_form()
@@ -35,6 +35,7 @@ class Paginator(object):
             except (AttributeError, TypeError):
                 self._count = len(self.object_list)
         return self._count
+
     count = property(_get_count)
 
     def page(self):
@@ -54,6 +55,6 @@ class LimitOffsetPaginator(Paginator):
 
     def page(self):
         super().page()
-        bottom = self.validated_arguments['offset'] or self.OFFSET
-        top = bottom + (self.validated_arguments['limit'] or self.LIMIT)
+        bottom = self.validated_arguments["offset"] or self.OFFSET
+        top = bottom + (self.validated_arguments["limit"] or self.LIMIT)
         return self.object_list[bottom:top]

@@ -1,77 +1,68 @@
 from .base import ApiViewException
 
 __all__ = (
-    'HttpError', 'HttpNotImplementedError', 'BadRequestError',
-    'InternalServerError', 'HttpFormError', 'NotFoundError',
-    'AuthRequiredError', 'ForbiddenError'
+    "HttpError",
+    "HttpNotImplementedError",
+    "BadRequestError",
+    "InternalServerError",
+    "HttpFormError",
+    "NotFoundError",
+    "AuthRequiredError",
+    "ForbiddenError",
 )
 
 
 class HttpError(ApiViewException):
+    """
+    Base class for any error happened during execution
+
+    :param http_code: response http_code
+    :param alias: unique key describing error
+    :param description: human readable description
+    """
+
     def __init__(self, http_code, alias, description):
         self.http_code = http_code
         self.alias = alias
         self.description = description
 
     def get_dict(self):
-        return {
-            'status': self.alias,
-            'message': self.description,
-            'data': {}
-        }
+        return {"status": self.alias, "message": self.description, "data": {}}
 
 
 class HttpNotImplementedError(HttpError):
     def __init__(self):
         super().__init__(
-            http_code=405,
-            alias='not_implemented',
-            description='Not implemented'
+            http_code=405, alias="not_implemented", description="Not implemented"
         )
 
 
 class BadRequestError(HttpError):
-    def __init__(self, description='Bad request'):
-        super().__init__(
-            http_code=400,
-            alias='bad_request',
-            description=description
-        )
+    def __init__(self, description="Bad request"):
+        super().__init__(http_code=400, alias="bad_request", description=description)
 
 
 class AuthRequiredError(HttpError):
     def __init__(self):
         super().__init__(
-            http_code=401,
-            alias='auth_required',
-            description='Authentication required'
+            http_code=401, alias="auth_required", description="Authentication required"
         )
 
 
 class ForbiddenError(HttpError):
     def __init__(self):
-        super().__init__(
-            http_code=403,
-            alias='forbidden',
-            description='Forbidden'
-        )
+        super().__init__(http_code=403, alias="forbidden", description="Forbidden")
 
 
 class NotFoundError(HttpError):
     def __init__(self):
-        super().__init__(
-            http_code=404,
-            alias='not_found',
-            description='Not Found'
-        )
+        super().__init__(http_code=404, alias="not_found", description="Not Found")
 
 
 class InternalServerError(HttpError):
     def __init__(self):
         super().__init__(
-            http_code=500,
-            alias='internal_error',
-            description='Internal server error'
+            http_code=500, alias="internal_error", description="Internal server error"
         )
 
 
@@ -90,5 +81,5 @@ class HttpFormError(BadRequestError):
 
     def get_dict(self):
         d = super().get_dict()
-        d['field_problems'] = self.field_problems
+        d["field_problems"] = self.field_problems
         return d

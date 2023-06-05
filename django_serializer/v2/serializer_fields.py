@@ -1,7 +1,8 @@
 import typing
+
 from marshmallow import fields
 
-__all__ = ('FileField',)
+__all__ = ("FileField",)
 
 
 class FileField(fields.Str):
