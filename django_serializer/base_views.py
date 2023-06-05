@@ -1,4 +1,5 @@
 import json
+from warnings import warn
 
 from django.http import HttpResponse
 from django.views.generic import View
@@ -21,6 +22,15 @@ from django_serializer.mixins import (
 
 class BaseView(View):
     args_form = None
+
+    def __init_subclass__(cls, **kwargs):
+        warn(
+            f"{cls.__name__} inherits `django_serializer.base_views.BaseView` which is deprecated. "
+            f"Use `django_serializer.v2` version instead",
+            DeprecationWarning,
+            stacklevel=2,
+        )
+        super().__init_subclass__(**kwargs)
 
     @property
     def request_args(self):

@@ -1,3 +1,5 @@
+from warnings import warn
+
 from django.conf import settings
 from django.db import models
 
@@ -71,6 +73,15 @@ class SerializerMeta(type):
 
 
 class Serializer(metaclass=SerializerMeta):
+    def __init_subclass__(cls, **kwargs):
+        warn(
+            f"{cls.__name__} inherits `django_serializer.serializer.base.Serializer` which is deprecated. "
+            f"Use `django_serializer.v2` version instead",
+            DeprecationWarning,
+            stacklevel=2,
+        )
+        super().__init_subclass__(**kwargs)
+
     def __init__(self, obj, multiple=False, dict_format=False, dict_key="id"):
         self.obj = obj
         self.multiple = multiple

@@ -1,4 +1,7 @@
 # 1.2.0
+- `django_serializer.base_views.BaseView` deprecated. It will be removed in version 2.0
+- `django_serializer.serializer.base.Serializer` deprecated. It will be removed in version 2.0
+
 - add `django_serializer.v2.renderers.BaseRenderer` see docstrings
 - add `django_serializer.v2.renderers.JsonRenderer` see docstrings
 - add `SERIALIZER_DEFAULT_PARSER_CLASS` to django settings
