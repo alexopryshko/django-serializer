@@ -1,3 +1,6 @@
+# 1.2.1
+- fix SERIALIZER_FIELD_MAPPING
+
 # 1.2.0
 - drop support for django2
 - add django4.2 to test matrix

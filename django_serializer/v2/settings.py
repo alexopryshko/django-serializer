@@ -54,7 +54,7 @@ class ApiSettings:
             fields = self.DEFAULTS[attr]
             extra_fields = getattr(django_settings, attr, None)
             if extra_fields is not None:
-                fields = fields.update(extra_fields)
+                fields.update(extra_fields)
             return fields
 
         user_config = getattr(django_settings, attr, None)
